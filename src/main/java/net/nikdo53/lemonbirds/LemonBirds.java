@@ -1,10 +1,7 @@
 package net.nikdo53.lemonbirds;
 
 import net.minecraft.resources.ResourceLocation;
-import net.nikdo53.lemonbirds.init.ModCreativeTabs;
-import net.nikdo53.lemonbirds.init.ModDataAttachments;
-import net.nikdo53.lemonbirds.init.ModEntities;
-import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.lemonbirds.init.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -43,6 +40,7 @@ public class LemonBirds {
 
     public LemonBirds(IEventBus modEventBus, ModContainer modContainer) {
         ModItems.ITEMS.register(modEventBus);
+        ModBlocks.BLOCKS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
         ModCreativeTabs.TABS.register(modEventBus);
         ModDataAttachments.ATTACHMENT_TYPES.register(modEventBus);

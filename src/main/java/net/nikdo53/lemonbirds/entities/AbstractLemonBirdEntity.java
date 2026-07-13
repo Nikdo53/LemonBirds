@@ -45,6 +45,11 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             AbstractLemonBirdEntity.class, EntityDataSerializers.BOOLEAN
     );
 
+    private static final EntityDataAccessor<Integer> HIT_COOLDOWN = SynchedEntityData.defineId(
+            AbstractLemonBirdEntity.class, EntityDataSerializers.INT
+    );
+
+
     public AbstractLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level, Position pos) {
         super(entityType, pos.x(), pos.y(), pos.z(), level);
     }
@@ -78,19 +83,26 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_HAS_ABILITY, true);
+        builder.define(HIT_COOLDOWN, 0);
     }
 
     @Override
-    protected void onHit(HitResult result) {
-        super.onHit(result);
+    public void tick() {
+        super.tick();
+        if (entityData.get(HIT_COOLDOWN) > 0) {
+            entityData.set(HIT_COOLDOWN, entityData.get(HIT_COOLDOWN) - 1);
+        }
     }
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
+        if (entityData.get(HIT_COOLDOWN) > 0) {
+            return;
+        }
         super.onHitBlock(result);
 
         if (level().isClientSide){
-            System.out.println("client!");
+            System.out.println("Below is client:");
         }
 
         Level level = level();
@@ -103,16 +115,20 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         double speed = 10.0 * movement.lengthSqr();
         double size = 0.1 * speed;
 
+        System.out.println("speed = " + speed);
+
         if (speed > 5) {
             BlockPos.betweenClosedStream(AABB.ofSize(getCoolPosition(pos), size, size, size))
                     .forEach(blockPos -> destroyBlock(blockPos, chunk));
 
+            entityData.set(HIT_COOLDOWN, 20); // Set cooldown to 20 ticks (1 second)
+
         } else {
-            if (!(level instanceof ServerLevel serverLevel)) return;
-
-            ServerSubLevel subLevel = createOrGetSubLevel(serverLevel, pos);
-            applyPhysics(serverLevel, subLevel, normal, speed * 5);
-
+           /* if (level instanceof ServerLevel serverLevel) {
+                ServerSubLevel subLevel = createOrGetSubLevel(serverLevel, pos);
+                applyPhysics(serverLevel, subLevel, normal, speed * 5);
+            }
+*/
             discard();
         }
     }
@@ -132,6 +148,8 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     public void destroyBlock(BlockPos pos, LevelChunk chunk) {
         BlockState state = chunk.getBlockState(pos);
         if (state.isAir()) return;
+
+        System.out.println("destroyed pos = " + pos);
 
         chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
 
@@ -219,6 +237,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         public Vec3 applyMovementPostHit(Entity entity, BlockState state){
             Vec3 scaled = entity.getDeltaMovement().scale(getForBlock(state));
             entity.setDeltaMovement(scaled);
+            System.out.println("scaled movement = " + scaled);
             return scaled;
         }
     }
