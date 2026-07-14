@@ -9,9 +9,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
+import net.nikdo53.lemonbirds.network.ActivateLemonBirdPayload;
 
 @EventBusSubscriber(modid = LemonBirds.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -33,6 +35,7 @@ public class ClientEvents {
             if (!(entity instanceof AbstractLemonBirdEntity lemonBird))
                 throw new IllegalStateException("Entity with ID " + entityId + " is not a Lemon Bird! WTF");
 
+            PacketDistributor.sendToServer(new ActivateLemonBirdPayload(entityId));
             lemonBird.onAbilityKey();
         }
     }

@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "lemonbirds:item/matilda_bird"
+      }
+    ]
+  }
+}

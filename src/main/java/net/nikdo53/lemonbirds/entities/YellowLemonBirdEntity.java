@@ -25,6 +25,7 @@ public class YellowLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected void activateAbility() {
+        this.setDeltaMovement(this.getDeltaMovement().scale(2.0));
 
     }
 

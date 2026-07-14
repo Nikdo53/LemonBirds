@@ -19,22 +19,32 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public class BirdItem extends Item implements ProjectileItem {
     private final BiFunction<Level, Player, AbstractLemonBirdEntity> useFunction;
     private final BiFunction<Level, Position, AbstractLemonBirdEntity> projectileFunction;
+    private final Supplier<Block> block;
 
-    public BirdItem(Properties properties, BiFunction<Level, Player, AbstractLemonBirdEntity> useFunction, BiFunction<Level, Position, AbstractLemonBirdEntity> projectileFunction) {
+    public BirdItem(Properties properties, @Nullable Supplier<Block> block, BiFunction<Level, Player, AbstractLemonBirdEntity> useFunction, BiFunction<Level, Position, AbstractLemonBirdEntity> projectileFunction) {
         super(properties);
         this.useFunction = useFunction;
         this.projectileFunction = projectileFunction;
+        this.block = block;
+    }
+
+    public Optional<Block> getBlock() {
+        return Optional.ofNullable(block == null ? null : block.get());
     }
 
     @Override
@@ -68,9 +78,15 @@ public class BirdItem extends Item implements ProjectileItem {
         return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
     }
 
-    public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
+    public AbstractLemonBirdEntity asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
         AbstractLemonBirdEntity bird = projectileFunction.apply(level, pos);
         bird.setItem(stack);
+        bird.setHasAbility(false);
         return bird;
     }
+
+    public AbstractLemonBirdEntity asProjectile(Level level, Position pos, Direction direction) {
+        return asProjectile(level, pos, this.getDefaultInstance(), direction);
+    }
+
 }

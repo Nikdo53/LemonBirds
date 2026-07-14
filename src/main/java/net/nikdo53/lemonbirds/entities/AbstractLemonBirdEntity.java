@@ -25,6 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -33,12 +34,18 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.nikdo53.lemonbirds.blocks.FallingBirdBlockEntity;
 import net.nikdo53.lemonbirds.init.ModBlockTags;
+import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.lemonbirds.items.BirdItem;
+import net.nikdo53.lemonbirds.util.LateTickOperation;
+import net.nikdo53.lemonbirds.util.LemonUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Boolean> DATA_HAS_ABILITY = SynchedEntityData.defineId(
@@ -70,14 +77,23 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     }
 
     public void onAbilityKey(){
-        Boolean hasAbility = entityData.get(DATA_HAS_ABILITY);
-        if (hasAbility) {
+        if (hasAbility()) {
             activateAbility();
             entityData.set(DATA_HAS_ABILITY, false);
         }
     }
 
     protected abstract void activateAbility();
+
+    public void setHasAbility(boolean hasAbility){
+        if (getOwner() != null) {
+            entityData.set(DATA_HAS_ABILITY, hasAbility);
+        }
+    }
+
+    public boolean hasAbility(){
+        return getOwner() != null ? entityData.get(DATA_HAS_ABILITY) : false;
+    }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -94,6 +110,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         }
     }
 
+    public void onBlockEntityDespawn(BlockPos pos, Level level){
+
+    }
+
     @Override
     protected void onHitBlock(BlockHitResult result) {
         if (entityData.get(HIT_COOLDOWN) > 0) {
@@ -101,71 +121,34 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         }
         super.onHitBlock(result);
 
-        if (level().isClientSide){
-            System.out.println("Below is client:");
-        }
-
         Level level = level();
         BlockPos pos = result.getBlockPos().immutable();
-        LevelChunk chunk = getSubLevelChunk(level, pos);
 
-        Vec3i normal = result.getDirection().getOpposite().getNormal();
+        Vec3 location = result.getLocation();
+        Vec3 normal = location.subtract(pos.getX(), pos.getY(), pos.getZ()).subtract(0.5, 0.5, 0.5).multiply(-1, -1, -1);
+        System.out.println("normal = " + normal);
 
-        Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, chunk.getBlockState(pos));
+        Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, level.getBlockState(pos));
         double speed = 10.0 * movement.lengthSqr();
         double size = 0.1 * speed;
 
         System.out.println("speed = " + speed);
 
-        if (speed > 5) {
-            BlockPos.betweenClosedStream(AABB.ofSize(getCoolPosition(pos), size, size, size))
-                    .forEach(blockPos -> destroyBlock(blockPos, chunk));
+        if (speed > 5 && getDestroyEffectivity().canDestroy) {
+            BlockPos.betweenClosedStream(AABB.ofSize(location, size, size, size))
+                    .forEach(blockPos -> level.destroyBlock(blockPos, false));
 
-            entityData.set(HIT_COOLDOWN, 20); // Set cooldown to 20 ticks (1 second)
+            entityData.set(HIT_COOLDOWN, 1);
 
         } else {
-           /* if (level instanceof ServerLevel serverLevel) {
-                ServerSubLevel subLevel = createOrGetSubLevel(serverLevel, pos);
-                applyPhysics(serverLevel, subLevel, normal, speed * 5);
+            if (level instanceof ServerLevel serverLevel) {
+                ServerSubLevel subLevel = (ServerSubLevel) SableCompanion.INSTANCE.getContaining(level, pos);
+                applyPhysics(serverLevel, subLevel, normal, speed * 12);
             }
-*/
+
             discard();
         }
     }
-
-    public static LevelChunk getSubLevelChunk(Level level, BlockPos pos) {
-        SubLevel subLevel = (SubLevel) SableCompanion.INSTANCE.getContaining(level, pos);
-
-        ChunkPos global = new ChunkPos(pos);
-        if (subLevel != null) {
-            LevelPlot plot = subLevel.getPlot();
-            return plot.getChunk(plot.toLocal(global));
-        }
-
-        return level.getChunk(global.x, global.z);
-    }
-
-    public void destroyBlock(BlockPos pos, LevelChunk chunk) {
-        BlockState state = chunk.getBlockState(pos);
-        if (state.isAir()) return;
-
-        System.out.println("destroyed pos = " + pos);
-
-        chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
-
-    }
-
-    public Vec3 getCoolPosition(BlockPos subLevelPos){
-        Vec3 position = this.position();
-
-        return new Vec3(
-                subLevelPos.getX() + Mth.frac(position.x),
-                subLevelPos.getY() + Mth.frac(position.y),
-                subLevelPos.getZ() + Mth.frac(position.z)
-        );
-
-    }
-
 
     private static @Nullable ServerSubLevel createOrGetSubLevel(ServerLevel level, BlockPos pos) {
         ServerSubLevel subLevel = (ServerSubLevel) SableCompanion.INSTANCE.getContaining(level, pos);
@@ -190,22 +173,21 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             );
 
             subLevel = SubLevelAssemblyHelper.assembleBlocks(level, anchor, blocks, bounds);
+
         }
 
         return subLevel;
     }
 
-    private static void applyPhysics(ServerLevel level, ServerSubLevel subLevel, Vec3i normal, double scale) {
+    private static void applyPhysics(ServerLevel level, ServerSubLevel subLevel, Vec3 normal, double scale) {
         SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(level);
 
-        if (system != null) {
-            Vec3 movement = new Vec3(normal.getX(), normal.getY(), normal.getZ()).scale(scale);
-            movement = subLevel.logicalPose().transformNormalInverse(movement);
+        if (system != null && subLevel != null) {
+            Vec3 movement = normal.scale(scale);
+           // movement = subLevel.logicalPose().transformNormalInverse(movement);
 
             RigidBodyHandle handle = RigidBodyHandle.of(subLevel);
             handle.applyLinearImpulse(JOMLConversion.toJOML(movement));
-
-            subLevel.applyQueuedForces(system, handle, 5);
         }
     }
 
@@ -217,10 +199,49 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             }
         }
 
+        turnIntoBlock();
+
         super.remove(reason);
     }
 
-    public record DestroyEffectivity(double wood, double stone, double glass, double hay) {
+    public void turnIntoBlock(){
+        Item item = getItem().getItem();
+        if (item instanceof BirdItem birdItem) {
+            Optional<Block> block = birdItem.getBlock();
+            if (block.isEmpty()) return;
+
+            BlockState state = block.get().defaultBlockState();
+            BlockPos pos = getOnPos();
+            level().setBlock(pos, state, 3);
+            level().blockEntityChanged(pos);
+
+            if (level() instanceof ServerLevel serverLevel) {
+                final BoundingBox3i bounds = new BoundingBox3i(pos, pos);
+                bounds.set(
+                        bounds.minX - 1,
+                        bounds.minY - 1,
+                        bounds.minZ - 1,
+                        bounds.maxX + 1,
+                        bounds.maxY + 1,
+                        bounds.maxZ + 1
+                );
+
+
+                ServerSubLevel subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, List.of(pos), bounds);
+
+                Vec3 deltaMovement = getDeltaMovement().scale(-1);
+                LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(5, (lvl) -> {
+                    if (subLevel != null) {
+                        applyPhysics(lvl, subLevel, deltaMovement, 10);
+                    }
+                }));
+
+            }
+
+        }
+    }
+
+    public record DestroyEffectivity(double wood, double stone, double glass, double hay, boolean canDestroy) {
         public double getForBlock(BlockState block){
             if (block.is(ModBlockTags.LEMON_BIRDS_STONE)){
                 return stone;
@@ -234,10 +255,13 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             return 0;
         }
 
+        public DestroyEffectivity(double wood, double stone, double glass, double hay) {
+            this(wood, stone, glass, hay, true);
+        }
+
         public Vec3 applyMovementPostHit(Entity entity, BlockState state){
             Vec3 scaled = entity.getDeltaMovement().scale(getForBlock(state));
             entity.setDeltaMovement(scaled);
-            System.out.println("scaled movement = " + scaled);
             return scaled;
         }
     }

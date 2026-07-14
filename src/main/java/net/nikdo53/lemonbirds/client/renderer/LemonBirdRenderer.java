@@ -26,7 +26,7 @@ public class LemonBirdRenderer<T extends Entity & ItemSupplier> extends EntityRe
     }
 
     public LemonBirdRenderer(EntityRendererProvider.Context context) {
-        this(context, 1.0F, false);
+        this(context, 2.0F, false);
     }
 
     @Override
@@ -38,6 +38,7 @@ public class LemonBirdRenderer<T extends Entity & ItemSupplier> extends EntityRe
     public void render(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         if (entity.tickCount >= 2 || !(this.entityRenderDispatcher.camera.getEntity().distanceToSqr(entity) < 12.25)) {
             poseStack.pushPose();
+            poseStack.translate(0.0D, 0.5D, 0.0D);
             poseStack.scale(this.scale, this.scale, this.scale);
             poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             this.itemRenderer

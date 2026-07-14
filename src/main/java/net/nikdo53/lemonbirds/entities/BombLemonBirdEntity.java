@@ -25,7 +25,7 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected void activateAbility() {
-
+        level().explode(this, this.getX(), this.getY(), this.getZ(), 2.0f, Level.ExplosionInteraction.MOB);
     }
 
     public BombLemonBirdEntity(Level level, Player player) {

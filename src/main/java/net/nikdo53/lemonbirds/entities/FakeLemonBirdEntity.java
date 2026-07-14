@@ -6,21 +6,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 public class FakeLemonBirdEntity extends AbstractLemonBirdEntity{
-    public FakeLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level, Position pos) {
+    public DestroyEffectivity destroyEffectivity;
+
+    public FakeLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level, Position pos, DestroyEffectivity destroyEffectivity) {
         super(entityType, level, pos);
+        this.destroyEffectivity = destroyEffectivity;
     }
 
     public FakeLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public FakeLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level, Player player) {
+    public FakeLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level, Player player, DestroyEffectivity destroyEffectivity) {
         super(entityType, level, player);
+        this.destroyEffectivity = destroyEffectivity;
     }
 
     @Override
     public DestroyEffectivity getDestroyEffectivity() {
-        return new DestroyEffectivity(0, 0, 0.2, 0);
+        return destroyEffectivity != null ? this.destroyEffectivity : new DestroyEffectivity(0, 0, 0.0, 0);
     }
 
     @Override

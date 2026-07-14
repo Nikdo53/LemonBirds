@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.nikdo53.lemonbirds.init.ModEntities;
+import net.nikdo53.lemonbirds.init.ModItems;
 
 import java.util.List;
 
@@ -25,6 +26,11 @@ public class BlueLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected void activateAbility() {
+        for (float yRotAdd : new float[] {15.0f, -15.0f}){
+                AbstractLemonBirdEntity projectile = ModItems.BLUE_BIRD.get().asProjectile(level(), getPosition(1), this.getMotionDirection());
+                projectile.shootFromRotation(this, this.getOwner().getXRot(), this.getOwner().getYRot() + yRotAdd, 0.0f, 1.5f, 1.0f);
+                level().addFreshEntity(projectile);
+        }
 
     }
 

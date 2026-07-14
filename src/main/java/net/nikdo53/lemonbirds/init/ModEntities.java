@@ -21,16 +21,16 @@ public interface ModEntities {
             .build(LemonBirds.loc("yellow_lemon_bird").toString()));
 
     Supplier<EntityType<BlueLemonBirdEntity>> BLUE_LEMON_BIRD = ENTITIES.register("blue_lemon_bird", () -> EntityType.Builder.<BlueLemonBirdEntity>of(BlueLemonBirdEntity::new, MobCategory.MISC)
-            .sized(1.0f, 1.0f)
+            .sized(0.5f, 0.5f)
             .build(LemonBirds.loc("blue_lemon_bird").toString()));
 
     Supplier<EntityType<BombLemonBirdEntity>> BOMB_LEMON_BIRD = ENTITIES.register("bomb_lemon_bird", () -> EntityType.Builder.<BombLemonBirdEntity>of(BombLemonBirdEntity::new, MobCategory.MISC)
             .sized(1.0f, 1.0f)
             .build(LemonBirds.loc("bomb_lemon_bird").toString()));
 
-    Supplier<EntityType<FakeLemonBirdEntity>> FAKE_LEMON_BIRD = ENTITIES.register("fake_lemon_bird", () -> EntityType.Builder.<FakeLemonBirdEntity>of(FakeLemonBirdEntity::new, MobCategory.MISC)
-            .sized(1.0f, 1.0f)
-            .build(LemonBirds.loc("fake_lemon_bird").toString()));
+    Supplier<EntityType<FakeLemonBirdEntity>> RED_SCREAM_ENTITY = ENTITIES.register("red_scream_entity", () -> EntityType.Builder.<FakeLemonBirdEntity>of(FakeLemonBirdEntity::new, MobCategory.MISC)
+            .sized(3.5f, 2.0f)
+            .build(LemonBirds.loc("red_scream_entity").toString()));
 
 
     ;

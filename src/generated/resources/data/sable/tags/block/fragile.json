@@ -1,6 +1,6 @@
 {
   "values": [
-    "#minecraft:planks",
-    "#minecraft:base_stone_overworld"
+    "#lemonbirds:lemon_birds_wood",
+    "#lemonbirds:lemon_birds_glass"
   ]
 }

@@ -1,16 +1,11 @@
 package net.nikdo53.lemonbirds.entities;
 
-import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Position;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.nikdo53.lemonbirds.init.ModEntities;
-
-import java.util.List;
+import net.nikdo53.lemonbirds.init.ModItems;
 
 public class RedLemonBirdEntity extends AbstractLemonBirdEntity{
     public RedLemonBirdEntity(Level level, Position pos) {
@@ -29,8 +24,15 @@ public class RedLemonBirdEntity extends AbstractLemonBirdEntity{
     @Override
     protected void activateAbility() {
 
+        AbstractLemonBirdEntity projectile = ModItems.RED_SCREAM.get().asProjectile(level(), getPosition(1), this.getMotionDirection());
+        projectile.shootFromRotation(this, this.getOwner().getXRot(), this.getOwner().getYRot(), 0.0f, 1.5f, 1.0f);
+        level().addFreshEntity(projectile);
+
+
+        setDeltaMovement(getDeltaMovement().scale(0.75));
 
     }
+
 
     public RedLemonBirdEntity(Level level, Player player) {
         super(ModEntities.RED_LEMON_BIRD.get(), level, player);
