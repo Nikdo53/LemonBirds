@@ -14,10 +14,10 @@ import net.nikdo53.lemonbirds.util.LemonUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 
-public class LemonBirdBlock extends Block implements BlockWithSubLevelCollisionCallback {
+public class LemonBirdBlockOld extends Block implements BlockWithSubLevelCollisionCallback {
     public static final LemonBirdCollisionCallback COLLISION_CALLBACK = new LemonBirdCollisionCallback();
 
-    public LemonBirdBlock(Properties properties) {
+    public LemonBirdBlockOld(Properties properties) {
         super(properties);
     }
 

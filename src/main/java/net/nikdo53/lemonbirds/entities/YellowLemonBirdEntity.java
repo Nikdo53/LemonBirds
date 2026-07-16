@@ -1,10 +1,13 @@
 package net.nikdo53.lemonbirds.entities;
 
 import net.minecraft.core.Position;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.level.NoteBlockEvent;
 import net.nikdo53.lemonbirds.init.ModEntities;
 
 import java.util.List;
@@ -25,7 +28,11 @@ public class YellowLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected void activateAbility() {
-        this.setDeltaMovement(this.getDeltaMovement().scale(2.0));
+        Player owner = (Player) getOwner();
+        assert owner != null;
+
+        Vec3 deltaMovement = getDeltaMovement();
+        this.setDeltaMovement(deltaMovement.add(owner.getLookAngle().scale(1.0)));
 
     }
 

@@ -1,11 +1,13 @@
 package net.nikdo53.lemonbirds.entities;
 
 import net.minecraft.core.Position;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.nikdo53.lemonbirds.init.ModEntities;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -25,7 +27,11 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected void activateAbility() {
-        level().explode(this, this.getX(), this.getY(), this.getZ(), 2.0f, Level.ExplosionInteraction.MOB);
+        birdExplosion(level(), this.position(), this);
+    }
+
+    public static void birdExplosion(Level level, Position pos, @Nullable Entity source){
+        level.explode(source, pos.x(), pos.y(), pos.z(), 2.0f, Level.ExplosionInteraction.MOB);
     }
 
     public BombLemonBirdEntity(Level level, Player player) {

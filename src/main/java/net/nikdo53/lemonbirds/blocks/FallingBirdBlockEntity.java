@@ -20,7 +20,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
+import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
+import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,66 +32,37 @@ public class FallingBirdBlockEntity extends BlockEntity {
     public int tickCount = 0;
     public static final int MAX_TICKS = 200;
 
-    public Vec3 birdPos;
-    public ItemStack birdItem;
-
     public FallingBirdBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.FALLING_BIRD.get(), pos, blockState);
     }
 
-    public FallingBirdBlockEntity(BlockPos pos, BlockState blockState, Vec3 birdPos, ItemStack birdItem) {
-        super(ModBlockEntities.FALLING_BIRD.get(), pos, blockState);
-        this.birdPos = birdPos;
-        this.birdItem = birdItem;
-
-        setChanged();
-    }
-
-    public boolean hasBird() {
-        return birdItem != null && birdPos != null;
-    }
-
     public void tick(Level level, BlockPos pos, BlockState state){
             tickCount++;
-            if ((tickCount >= MAX_TICKS || !hasBird()) && !level.isClientSide) {
-                if (hasBird()) {
-                    ((BirdItem) birdItem.getItem()).asProjectile(level, birdPos, Direction.NORTH).onBlockEntityDespawn(pos, level);
+            if ((tickCount >= MAX_TICKS && !level.isClientSide())) {
+
+                if (state.is(ModBlocks.BOMB_BIRD_BLOCK.get())){
+                    BombLemonBirdEntity.birdExplosion(level, pos.getCenter(), null);
                 }
-
-                level.removeBlockEntity(pos);
+                
                 level.removeBlock(pos, false);
-            }
-    }
+                level.removeBlockEntity(pos);
 
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        CompoundTag updateTag = super.getUpdateTag(registries);
-        saveAdditional(updateTag, registries);
-        return updateTag;
+            }
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        if (hasBird()) {
-            tag.putDouble("birdX", birdPos.x);
-            tag.putDouble("birdY", birdPos.y);
-            tag.putDouble("birdZ", birdPos.z);
 
-            tag.put("birdItem", birdItem.save(registries));
-        }
+        tag.putInt("tickCount", tickCount);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
 
-        this.birdPos = new Vec3(tag.getDouble("birdX"), tag.getDouble("birdY"), tag.getDouble("birdZ"));
-        this.birdItem = ItemStack.parse(registries, tag.getCompound("birdItem")).orElseThrow();
+        tickCount = tag.getInt("tickCount");
+
     }
 
-    @Override
-    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
 }

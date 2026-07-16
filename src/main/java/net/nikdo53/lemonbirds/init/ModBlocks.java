@@ -9,8 +9,6 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
-import net.nikdo53.lemonbirds.blocks.FallingBirdBlockNew;
-import net.nikdo53.lemonbirds.blocks.LemonBirdBlock;
 
 import java.util.function.Supplier;
 
@@ -19,11 +17,11 @@ public interface ModBlocks {
 
     DeferredBlock<Block> FALLING_LEMON_BIRD_BLOCK = BLOCKS.register("falling_lemon_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
-    DeferredBlock<Block> RED_BIRD_BLOCK = BLOCKS.register("red_bird_block", () -> new FallingBirdBlockNew(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> YELLOW_BIRD_BLOCK = BLOCKS.register("yellow_bird_block", () -> new FallingBirdBlockNew(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> BLUE_BIRD_BLOCK = BLOCKS.register("blue_bird_block", () -> new FallingBirdBlockNew(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> BOMB_BIRD_BLOCK = BLOCKS.register("bomb_bird_block", () -> new FallingBirdBlockNew(BlockBehaviour.Properties.of().noOcclusion()));
-        DeferredBlock<Block> MATILDA_BIRD_BLOCK = BLOCKS.register("matilda_bird_block", () -> new FallingBirdBlockNew(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> RED_BIRD_BLOCK = BLOCKS.register("red_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> YELLOW_BIRD_BLOCK = BLOCKS.register("yellow_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> BLUE_BIRD_BLOCK = BLOCKS.register("blue_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> BOMB_BIRD_BLOCK = BLOCKS.register("bomb_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> MATILDA_BIRD_BLOCK = BLOCKS.register("matilda_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
 
     static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> block){

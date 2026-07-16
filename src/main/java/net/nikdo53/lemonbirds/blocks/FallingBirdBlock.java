@@ -22,13 +22,13 @@ public class FallingBirdBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new FallingBirdBlockEntity(pos, state);
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new FallingBirdBlockEntity(pos, state);
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override

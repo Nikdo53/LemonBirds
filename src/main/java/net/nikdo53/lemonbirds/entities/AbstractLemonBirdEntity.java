@@ -1,10 +1,13 @@
 package net.nikdo53.lemonbirds.entities;
 
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
+import dev.ryanhcode.sable.api.command.SableCommandHelper;
+import dev.ryanhcode.sable.api.physics.PhysicsPipeline;
 import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
+import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
@@ -30,10 +33,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlockEntity;
 import net.nikdo53.lemonbirds.init.ModBlockTags;
 import net.nikdo53.lemonbirds.init.ModBlocks;
@@ -43,6 +43,7 @@ import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
 import net.nikdo53.lemonbirds.util.LemonUtils;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaterniond;
 
 import java.util.List;
 import java.util.Optional;
@@ -229,7 +230,22 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
                 ServerSubLevel subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, List.of(pos), bounds);
 
+                Vec2 rotationVector = this.getRotationVector();
                 Vec3 deltaMovement = getDeltaMovement().scale(-1);
+                if (subLevel != null) {
+                    SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(serverLevel);
+                    Pose3d pose = subLevel.logicalPose();
+
+                    Quaterniond orientation = new Quaterniond();
+
+                    orientation.rotateY(-Math.toRadians(rotationVector.y));
+                    orientation.rotateX(Math.toRadians(rotationVector.x));
+
+                    pose.orientation().set(orientation);
+                    system.getPipeline().teleport(subLevel, pose.position(), pose.orientation());
+
+                }
+
                 LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(5, (lvl) -> {
                     if (subLevel != null) {
                         applyPhysics(lvl, subLevel, deltaMovement, 10);

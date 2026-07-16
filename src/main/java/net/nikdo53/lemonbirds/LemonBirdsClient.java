@@ -10,8 +10,8 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.nikdo53.lemonbirds.client.renderer.FallingBirdBlockRenderer;
 import net.nikdo53.lemonbirds.client.renderer.LemonBirdRenderer;
+import net.nikdo53.lemonbirds.client.renderer.MatildaEggRenderer;
 import net.nikdo53.lemonbirds.client.renderer.RedScreamRenderer;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModEntities;
@@ -32,9 +32,11 @@ public class LemonBirdsClient {
         event.registerEntityRenderer(ModEntities.BOMB_LEMON_BIRD.get(), (context -> new LemonBirdRenderer<>(context, 2.5f, false)));
         event.registerEntityRenderer(ModEntities.YELLOW_LEMON_BIRD.get(), LemonBirdRenderer::new);
         event.registerEntityRenderer(ModEntities.BLUE_LEMON_BIRD.get(), LemonBirdRenderer::new);
-        event.registerEntityRenderer(ModEntities.RED_SCREAM_ENTITY.get(), RedScreamRenderer::new);
+        event.registerEntityRenderer(ModEntities.MATILDA_LEMON_BIRD.get(), LemonBirdRenderer::new);
 
-        event.registerBlockEntityRenderer(ModBlockEntities.FALLING_BIRD.get(), FallingBirdBlockRenderer::new);
+        event.registerEntityRenderer(ModEntities.RED_SCREAM_ENTITY.get(), RedScreamRenderer::new);
+        event.registerEntityRenderer(ModEntities.MATILDA_EGG_ENTITY.get(), MatildaEggRenderer::new);
+
     }
 
 }

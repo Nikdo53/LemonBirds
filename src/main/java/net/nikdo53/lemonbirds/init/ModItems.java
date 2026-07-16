@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.entities.*;
 import net.nikdo53.lemonbirds.items.BirdItem;
+import net.nikdo53.lemonbirds.items.MatildaEggItem;
 import net.nikdo53.lemonbirds.items.TestItem;
 
 public interface ModItems {
@@ -16,15 +17,18 @@ public interface ModItems {
     DeferredItem<BirdItem> BOMB_BIRD = ITEMS.register("bomb_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.BOMB_BIRD_BLOCK, BombLemonBirdEntity::new, BombLemonBirdEntity::new));
     DeferredItem<BirdItem> YELLOW_BIRD = ITEMS.register("yellow_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.YELLOW_BIRD_BLOCK, YellowLemonBirdEntity::new, YellowLemonBirdEntity::new));
     DeferredItem<BirdItem> BLUE_BIRD = ITEMS.register("blue_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.BLUE_BIRD_BLOCK, BlueLemonBirdEntity::new, BlueLemonBirdEntity::new));
-    DeferredItem<BirdItem> MATILDA_BIRD = ITEMS.register("matilda_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.MATILDA_BIRD_BLOCK, RedLemonBirdEntity::new, RedLemonBirdEntity::new));
+    DeferredItem<BirdItem> MATILDA_BIRD = ITEMS.register("matilda_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.MATILDA_BIRD_BLOCK, MatildaLemonBirdEntity::new, MatildaLemonBirdEntity::new));
 
     AbstractLemonBirdEntity.DestroyEffectivity SCREAM_EFFECTIVITY = new AbstractLemonBirdEntity.DestroyEffectivity(0.8, 0.8, 0.8, 0.8, false);
 
     DeferredItem<BirdItem> RED_SCREAM = ITEMS.register("red_bird_scream", () -> new BirdItem(new Item.Properties(), null,
-            ((level, player) -> new FakeLemonBirdEntity(ModEntities.RED_SCREAM_ENTITY.get(), level, player, SCREAM_EFFECTIVITY)),
+            (level, player) -> new FakeLemonBirdEntity(ModEntities.RED_SCREAM_ENTITY.get(), level, player, SCREAM_EFFECTIVITY),
             (level, position) -> new FakeLemonBirdEntity(ModEntities.RED_SCREAM_ENTITY.get(), level, position, SCREAM_EFFECTIVITY)));
 
-    DeferredItem<Item> TEST = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
+    DeferredItem<Item> MATILDA_EGG = ITEMS.register("matilda_egg", () -> new MatildaEggItem(new Item.Properties()));
+
+
+  //  DeferredItem<Item> TEST = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
 
 
 }
