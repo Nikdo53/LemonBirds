@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.nikdo53.lemonbirds.client.renderer.LemonBirdRenderer;
@@ -16,6 +17,8 @@ import net.nikdo53.lemonbirds.client.renderer.RedScreamRenderer;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModEntities;
 import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.lemonbirds.init.ModParticles;
+import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 
 
 @Mod(value = LemonBirds.MOD_ID, dist = Dist.CLIENT)
@@ -38,5 +41,11 @@ public class LemonBirdsClient {
         event.registerEntityRenderer(ModEntities.MATILDA_EGG_ENTITY.get(), MatildaEggRenderer::new);
 
     }
+
+    @SubscribeEvent
+    public static void onRegisterParticles(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(ModParticles.LEMON_BIRD_TRAIL.get(), BirdTrailParticle.Provider::new);
+    }
+
 
 }

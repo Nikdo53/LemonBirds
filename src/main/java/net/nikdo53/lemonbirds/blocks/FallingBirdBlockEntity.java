@@ -30,7 +30,7 @@ import java.util.List;
 
 public class FallingBirdBlockEntity extends BlockEntity {
     public int tickCount = 0;
-    public static final int MAX_TICKS = 200;
+    public static final int MAX_TICKS = 120;
 
     public FallingBirdBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.FALLING_BIRD.get(), pos, blockState);
@@ -43,7 +43,7 @@ public class FallingBirdBlockEntity extends BlockEntity {
                 if (state.is(ModBlocks.BOMB_BIRD_BLOCK.get())){
                     BombLemonBirdEntity.birdExplosion(level, pos.getCenter(), null);
                 }
-                
+
                 level.removeBlock(pos, false);
                 level.removeBlockEntity(pos);
 

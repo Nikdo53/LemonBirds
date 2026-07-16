@@ -28,6 +28,14 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
     @Override
     protected void activateAbility() {
         birdExplosion(level(), this.position(), this);
+        this.discard();
+    }
+
+    @Override
+    public void turnIntoBlock() {
+        if (hasAbility()) {
+            super.turnIntoBlock();
+        }
     }
 
     public static void birdExplosion(Level level, Position pos, @Nullable Entity source){

@@ -20,6 +20,7 @@ public class LemonBirds {
         ModBlocks.BLOCKS.register(modEventBus);
         ModEntities.ENTITIES.register(modEventBus);
         ModCreativeTabs.TABS.register(modEventBus);
+        ModParticles.PARTICLES.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
     }

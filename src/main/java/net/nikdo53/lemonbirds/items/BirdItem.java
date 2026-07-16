@@ -12,11 +12,14 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -27,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -50,15 +54,20 @@ public class BirdItem extends Item implements ProjectileItem {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
+        BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
+        Player player = context.getPlayer();
 
-        if (level.getBlockState(pos).is(Blocks.STONE) && SubLevelPhysicsSystem.get(level) instanceof SubLevelPhysicsSystem system) {
-
-            BoxPhysicsObject object = new BoxPhysicsObject(new Pose3d(new Vector3d(pos.getX(), pos.getY(), pos.getZ()), new Quaterniond(), new Vector3d(), new Vector3d(1)), new Vector3d(2), 0.25);
-            system.addObject(object);
+        if (player != null && player.isCrouching() && player.isCreative() && level.getBlockState(pos).canBeReplaced() && getBlock().isPresent()) {
+            level.setBlockAndUpdate(pos, Objects.requireNonNull(getBlock().get().getStateForPlacement(new BlockPlaceContext(context))));
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
-        return InteractionResult.FAIL;
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+        return armorType == EquipmentSlot.HEAD;
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
@@ -88,5 +97,7 @@ public class BirdItem extends Item implements ProjectileItem {
     public AbstractLemonBirdEntity asProjectile(Level level, Position pos, Direction direction) {
         return asProjectile(level, pos, this.getDefaultInstance(), direction);
     }
+
+
 
 }

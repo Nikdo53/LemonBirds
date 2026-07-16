@@ -25,7 +25,7 @@ public interface ModEntities {
             .build(LemonBirds.loc("blue_lemon_bird").toString()));
 
     Supplier<EntityType<BombLemonBirdEntity>> BOMB_LEMON_BIRD = ENTITIES.register("bomb_lemon_bird", () -> EntityType.Builder.<BombLemonBirdEntity>of(BombLemonBirdEntity::new, MobCategory.MISC)
-            .sized(1.0f, 1.0f)
+            .sized(1.8f, 1.8f)
             .build(LemonBirds.loc("bomb_lemon_bird").toString()));
 
     Supplier<EntityType<MatildaLemonBirdEntity>> MATILDA_LEMON_BIRD = ENTITIES.register("matilda_lemon_bird", () -> EntityType.Builder.<MatildaLemonBirdEntity>of(MatildaLemonBirdEntity::new, MobCategory.MISC)

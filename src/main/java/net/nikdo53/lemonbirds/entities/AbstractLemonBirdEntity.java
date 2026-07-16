@@ -12,9 +12,12 @@ import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.DustParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -34,11 +37,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.*;
+import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlockEntity;
-import net.nikdo53.lemonbirds.init.ModBlockTags;
-import net.nikdo53.lemonbirds.init.ModBlocks;
-import net.nikdo53.lemonbirds.init.ModDataAttachments;
-import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.lemonbirds.init.*;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
 import net.nikdo53.lemonbirds.util.LemonUtils;
@@ -79,8 +80,8 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
     public void onAbilityKey(){
         if (hasAbility()) {
-            activateAbility();
             entityData.set(DATA_HAS_ABILITY, false);
+            activateAbility();
         }
     }
 
@@ -108,6 +109,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         super.tick();
         if (entityData.get(HIT_COOLDOWN) > 0) {
             entityData.set(HIT_COOLDOWN, entityData.get(HIT_COOLDOWN) - 1);
+        }
+
+        if (level() instanceof ClientLevel clientLevel){
+            clientLevel.addParticle(ModParticles.LEMON_BIRD_TRAIL.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
         }
     }
 
@@ -212,6 +217,8 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             if (block.isEmpty()) return;
 
             BlockState state = block.get().defaultBlockState();
+            state.setValue(FallingBirdBlock.DESPAWNS, true);
+
             BlockPos pos = getOnPos();
             level().setBlock(pos, state, 3);
             level().blockEntityChanged(pos);
