@@ -37,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.*;
+import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlockEntity;
 import net.nikdo53.lemonbirds.init.*;
@@ -234,8 +235,13 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
                         bounds.maxZ + 1
                 );
 
-
-                ServerSubLevel subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, List.of(pos), bounds);
+                ServerSubLevel subLevel;
+                try {
+                    subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, List.of(pos), bounds);
+                } catch (ArrayIndexOutOfBoundsException e){
+                    LemonBirds.LOGGER.error("Unable to create sub-level cuz sable sucks");
+                    return;
+                }
 
                 Vec2 rotationVector = this.getRotationVector();
                 Vec3 deltaMovement = getDeltaMovement().scale(-1);

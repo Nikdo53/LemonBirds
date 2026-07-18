@@ -42,6 +42,15 @@ public interface ModEntities {
             .sized(0.5f, 0.5f)
             .build(LemonBirds.loc("matilda_egg_entity").toString()));
 
+    Supplier<EntityType<DummyEntity>> DUMMY = ENTITIES.register("dummy", () -> EntityType.Builder.<DummyEntity>of(DummyEntity::new, MobCategory.MISC)
+            .sized(1.0f, 1.0f).eyeHeight(0.8f)
+            .build(LemonBirds.loc("dummy").toString()));
+    Supplier<EntityType<DummyProjectile>> DUMMY_PROJECTILE = ENTITIES.register("dummy_projectile", () -> EntityType.Builder.<DummyProjectile>of(DummyProjectile::new, MobCategory.MISC)
+            .sized(1.0f, 1.0f)
+            .build(LemonBirds.loc("dummy_projectile").toString()));
+
+
+
 
 
     ;

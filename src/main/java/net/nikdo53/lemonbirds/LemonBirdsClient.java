@@ -1,29 +1,22 @@
 package net.nikdo53.lemonbirds;
 
-import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.nikdo53.lemonbirds.client.renderer.LemonBirdRenderer;
-import net.nikdo53.lemonbirds.client.renderer.MatildaEggRenderer;
-import net.nikdo53.lemonbirds.client.renderer.RedScreamRenderer;
+import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
+import net.nikdo53.lemonbirds.client.renderer.*;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModEntities;
-import net.nikdo53.lemonbirds.init.ModItems;
 import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 
 
 @Mod(value = LemonBirds.MOD_ID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = LemonBirds.MOD_ID, value = Dist.CLIENT)
-
 public class LemonBirdsClient {
     public LemonBirdsClient(ModContainer container) {
 
@@ -39,12 +32,25 @@ public class LemonBirdsClient {
 
         event.registerEntityRenderer(ModEntities.RED_SCREAM_ENTITY.get(), RedScreamRenderer::new);
         event.registerEntityRenderer(ModEntities.MATILDA_EGG_ENTITY.get(), MatildaEggRenderer::new);
+        event.registerEntityRenderer(ModEntities.DUMMY.get(), DummyRenderer::new);
+        event.registerEntityRenderer(ModEntities.DUMMY_PROJECTILE.get(), DummyRenderer::new);
+
+
+        event.registerBlockEntityRenderer(ModBlockEntities.SLING_SHOT.get(), SlingshotRenderer::new);
 
     }
 
     @SubscribeEvent
     public static void onRegisterParticles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.LEMON_BIRD_TRAIL.get(), BirdTrailParticle.Provider::new);
+    }
+
+    @SubscribeEvent
+    public static void onEntityRenderersRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(BirdSlingshotModel.BODY_LAYER, BirdSlingshotModel::bodyLayer);
+        event.registerLayerDefinition(BirdSlingshotModel.SUPPORT_LAYER, BirdSlingshotModel::supportLayer);
+        event.registerLayerDefinition(BirdSlingshotModel.STRETCH_LAYER, BirdSlingshotModel::stretchLayer);
+
     }
 
 

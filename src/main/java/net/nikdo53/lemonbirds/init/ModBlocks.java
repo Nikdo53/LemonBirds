@@ -8,6 +8,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nikdo53.lemonbirds.LemonBirds;
+import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 
 import java.util.function.Supplier;
@@ -22,6 +23,8 @@ public interface ModBlocks {
     DeferredBlock<Block> BLUE_BIRD_BLOCK = BLOCKS.register("blue_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> BOMB_BIRD_BLOCK = BLOCKS.register("bomb_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> MATILDA_BIRD_BLOCK = BLOCKS.register("matilda_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+
+    DeferredBlock<Block> SLING_SHOT = registerWithItem("bird_sling_shot", () -> new BirdSlingshotBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
 
     static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> block){

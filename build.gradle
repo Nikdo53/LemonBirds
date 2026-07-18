@@ -145,6 +145,7 @@ sourceSets.main.resources {
         implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
         implementation "curse.maven:explosive-enhancement-reforged-1036246:6520579"
+        jarJar(implementation("maven.modrinth:tiny-multiblock-lib:${tiny_multiblock_lib_version}"))
 
         implementation "maven.modrinth:oWaK0Q19:w7zlLnea"
     }
