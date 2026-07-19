@@ -10,10 +10,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.entities.DummyEntity;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
@@ -22,6 +23,9 @@ import net.nikdo53.lemonbirds.network.SlingshotDummyPosPayload;
 import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+
+import java.util.UUID;
 
 public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public BirdItem birdItem = null;
@@ -73,7 +77,7 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public void endControl(@Nullable Player player){
         if (player != null) {
             if (player.level().isClientSide()) {
-                ClientThingy.endControlClient(player, this);
+                ClientThingy.resetCamera(player.getUUID());
             }
 
             player.removeData(ModDataAttachments.SLINGSHOT);
@@ -90,6 +94,16 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public void onKeyPressed(Player player, int key){
         if (key == InputConstants.KEY_E){
             endControl(player);
+        }
+
+        if (key == InputConstants.KEY_H && birdItem != null){
+            AbstractLemonBirdEntity bird = birdItem.useFunction.apply(level, player);
+            bird.setOwner(player);
+            bird.setItem(birdItem.getDefaultInstance());
+
+            shoot(bird);
+            endControl(player);
+            bird.setControllingPlayer(player);
         }
     }
 
@@ -113,9 +127,9 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         Vec3 lookVec = getLookVec(partialTick);
 
         return switch (direction) {
-           case SOUTH -> new Vec3(lookVec.x, lookVec.y, -lookVec.z);
-           case NORTH -> new Vec3(-lookVec.x, lookVec.y, -lookVec.z);
-           case EAST -> new Vec3(-lookVec.z, lookVec.y, -lookVec.x);
+            case NORTH -> new Vec3(-lookVec.x, lookVec.y, lookVec.z);
+            case SOUTH -> new Vec3(lookVec.x, lookVec.y, -lookVec.z);
+            case EAST -> new Vec3(-lookVec.z, lookVec.y, -lookVec.x);
            case WEST -> new Vec3(lookVec.z, lookVec.y, lookVec.x);
            default -> throw new IllegalArgumentException("Invalid direction: " + direction);
        };
@@ -128,9 +142,33 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         return new Vec3(x, y, z);
     }
 
+    public void shoot(@NotNull Projectile projectile){
+        Vector3f pos = getRelativeDummyPos(1).toVector3f().mul(-1);
+
+        projectile.shoot(pos.x, pos.y, pos.z, 1f, 0.1f);
+        projectile.moveTo(getCenterPosition(this.getBlockPos()).add(getRelativeDummyPos(1)));
+        getLevel().addFreshEntity(projectile);
+    }
+
 
     public static class ClientThingy{
-        public static final float MAX_DISTANCE = 5;
+        public static final float MAX_DISTANCE = 15;
+
+        public static void trySetCamera(AbstractLemonBirdEntity entity, UUID uuid){
+            Minecraft minecraft = Minecraft.getInstance();
+            if (!minecraft.player.getUUID().equals(uuid)) return;
+
+            minecraft.setCameraEntity(entity);
+            entity.setOwner(minecraft.player);
+        }
+
+        public static void resetCamera(UUID uuid){
+            Minecraft minecraft = Minecraft.getInstance();
+            if (!minecraft.player.getUUID().equals(uuid)) return;
+
+            minecraft.setCameraEntity(minecraft.player);
+
+        }
 
         public static void beginControlClient(Player player, BirdSlingshotBlockEntity blockEntity) {
             Minecraft minecraft = Minecraft.getInstance();
@@ -139,11 +177,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
 
             assert level != null;
             minecraft.setCameraEntity(blockEntity.dummyEntity);
-        }
-
-        public static void endControlClient(Player player, BirdSlingshotBlockEntity blockEntity) {
-            Minecraft minecraft = Minecraft.getInstance();
-            minecraft.setCameraEntity(player);
         }
 
         public static void onInput(BirdSlingshotBlockEntity blockEntity, Input input){
@@ -193,7 +226,7 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
 
         private static boolean isMaxDistance(double x, double y, double z) {
-            return new Vec3(x, y, z / 3).lengthSqr() > MAX_DISTANCE;
+            return new Vec3(x, y * 1.5, z).lengthSqr() > MAX_DISTANCE;
         }
     }
 

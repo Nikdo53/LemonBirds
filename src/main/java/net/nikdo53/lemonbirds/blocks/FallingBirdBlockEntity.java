@@ -36,9 +36,13 @@ public class FallingBirdBlockEntity extends BlockEntity {
         super(ModBlockEntities.FALLING_BIRD.get(), pos, blockState);
     }
 
+    public int getMaxTicks(){
+        return getBlockState().is(ModBlocks.BOMB_BIRD_BLOCK) ? MAX_TICKS / 3 : MAX_TICKS;
+    }
+
     public void tick(Level level, BlockPos pos, BlockState state){
             tickCount++;
-            if ((tickCount >= MAX_TICKS && !level.isClientSide())) {
+            if ((tickCount >= getMaxTicks() && !level.isClientSide())) {
 
                 if (state.is(ModBlocks.BOMB_BIRD_BLOCK.get())){
                     BombLemonBirdEntity.birdExplosion(level, pos.getCenter(), null);

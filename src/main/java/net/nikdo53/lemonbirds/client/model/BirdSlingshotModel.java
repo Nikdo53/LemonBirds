@@ -14,43 +14,54 @@ public class BirdSlingshotModel {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create().texOffs(144, 136).addBox(-9.0F, -32.0F, -8.0F, 18.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 166).addBox(-9.0F, -48.0F, -8.0F, 18.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(144, 168).addBox(-8.0F, -64.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(208, 168).addBox(20.0F, -68.0F, -8.0F, 4.0F, 4.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(64, 202).addBox(24.0F, -64.0F, -8.0F, 14.0F, 14.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(196, 60).addBox(24.0F, -80.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(72, 136).addBox(23.0F, -112.0F, -9.0F, 18.0F, 16.0F, 18.0F, new CubeDeformation(0.0F))
-				.texOffs(68, 170).addBox(-24.0F, -64.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(212, 124).addBox(-24.0F, -68.0F, -8.0F, 4.0F, 4.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 132).addBox(-41.0F, -112.0F, -9.0F, 18.0F, 16.0F, 18.0F, new CubeDeformation(0.0F))
-				.texOffs(204, 20).addBox(-38.0F, -64.0F, -8.0F, 14.0F, 14.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(196, 92).addBox(-40.0F, -80.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 198).addBox(-40.0F, -96.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(196, 200).addBox(8.0F, -64.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(132, 200).addBox(24.0F, -96.0F, -8.0F, 16.0F, 16.0F, 16.0F, new CubeDeformation(0.0F))
-				.texOffs(108, 20).addBox(-12.0F, -16.0F, -12.0F, 24.0F, 16.0F, 24.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
+		PartDefinition root = partdefinition.addOrReplaceChild("root", CubeListBuilder.create().texOffs(72, 0).addBox(-11.0F, -4.0F, 39.0F, 22.0F, 4.0F, 22.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, -50.0F));
 
-		return LayerDefinition.create(meshdefinition, 512, 512);
+		PartDefinition bone = root.addOrReplaceChild("bone", CubeListBuilder.create().texOffs(50, 154).addBox(-7.0F, -17.0F, 43.0F, 14.0F, 13.0F, 14.0F, new CubeDeformation(0.0F))
+				.texOffs(156, 158).addBox(-6.0F, -39.0F, 44.0F, 12.0F, 22.0F, 12.0F, new CubeDeformation(0.0F))
+				.texOffs(160, 0).addBox(23.7695F, -107.2843F, 43.0F, 14.0F, 6.0F, 14.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 173).addBox(-36.7696F, -87.2843F, 44.0F, 12.0F, 20.0F, 12.0F, new CubeDeformation(0.0F))
+				.texOffs(176, 88).addBox(-37.7696F, -107.2843F, 43.0F, 14.0F, 6.0F, 14.0F, new CubeDeformation(0.0F))
+				.texOffs(176, 56).addBox(24.7695F, -87.2843F, 44.0F, 12.0F, 20.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+
+		PartDefinition cube_r1 = bone.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(120, 130).mirror().addBox(-7.0F, -7.0F, 43.0F, 14.0F, 14.0F, 14.0F, new CubeDeformation(0.0F)).mirror(false)
+				.texOffs(120, 84).addBox(-7.0F, -46.0F, 43.0F, 14.0F, 14.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -39.0F, 0.0F, 0.0F, 0.0F, 0.7854F));
+
+		PartDefinition cube_r2 = bone.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(120, 130).addBox(-7.0F, -7.0F, 43.0F, 14.0F, 14.0F, 14.0F, new CubeDeformation(0.0F))
+				.texOffs(120, 56).addBox(-7.0F, -46.0F, 43.0F, 14.0F, 14.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -39.0F, 0.0F, 0.0F, 0.0F, -0.7854F));
+
+		PartDefinition cube_r3 = bone.addOrReplaceChild("cube_r3", CubeListBuilder.create().texOffs(72, 90).addBox(-12.0F, -7.0F, -6.0F, 12.0F, 52.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(31.8198F, -62.3345F, 50.0F, 0.0F, 0.0F, 0.7854F));
+
+		PartDefinition cube_r4 = bone.addOrReplaceChild("cube_r4", CubeListBuilder.create().texOffs(72, 26).addBox(0.0F, -7.0F, -6.0F, 12.0F, 52.0F, 12.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-31.8198F, -62.3345F, 50.0F, 0.0F, 0.0F, -0.7854F));
+
+		PartDefinition bone8 = bone.addOrReplaceChild("bone8", CubeListBuilder.create().texOffs(120, 26).addBox(53.5391F, -7.0F, -16.0F, 16.0F, 14.0F, 16.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 92).addBox(-8.0F, -7.0F, -16.0F, 16.0F, 14.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offset(-30.7695F, -94.2843F, 58.0F));
+
+		return LayerDefinition.create(meshdefinition, 256, 256);
 	}
 
 	public static LayerDefinition supportLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition support = partdefinition.addOrReplaceChild("support", CubeListBuilder.create().texOffs(108, 0).addBox(2.0F, -8.0F, 46.0F, 60.0F, 16.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-64.0F, -8.0F, 11.0F));
+		PartDefinition support = partdefinition.addOrReplaceChild("support", CubeListBuilder.create().texOffs(120, 112).addBox(2.0F, -7.0F, 47.0F, 29.0F, 14.0F, 4.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 122).addBox(30.5391F, -7.0F, 47.0F, 29.0F, 14.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offset(-30.7695F, -70.2843F, 8.0F));
 
-		return LayerDefinition.create(meshdefinition, 512, 512);
+		return LayerDefinition.create(meshdefinition, 256, 256);
 	}
 
 	public static LayerDefinition stretchLayer() {
 		MeshDefinition meshdefinition = new MeshDefinition();
 		PartDefinition partdefinition = meshdefinition.getRoot();
 
-		PartDefinition bone6 = partdefinition.addOrReplaceChild("bone6", CubeListBuilder.create().texOffs(0, 0).addBox(-2.0F, -8.0F, 0.0F, 4.0F, 16.0F, 50.0F, new CubeDeformation(0.0F))
-				.texOffs(0, 66).addBox(-66.0F, -8.0F, 0.0F, 4.0F, 16.0F, 50.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -8.0F, 11.0F));
+		PartDefinition stretch = partdefinition.addOrReplaceChild("stretch", CubeListBuilder.create(), PartPose.offset(-30.7695F, -70.2843F, 8.0F));
 
-		return LayerDefinition.create(meshdefinition, 512, 512);
+		PartDefinition bone6 = stretch.addOrReplaceChild("bone6", CubeListBuilder.create().texOffs(0, 140).addBox(-3.0F, -7.0F, 0.0F, 6.0F, 14.0F, 19.0F, new CubeDeformation(0.0F))
+				.texOffs(0, 46).addBox(-2.0F, -7.0F, 19.0F, 4.0F, 14.0F, 32.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
+
+		PartDefinition bone5 = stretch.addOrReplaceChild("bone5", CubeListBuilder.create().texOffs(0, 0).addBox(-2.0F, -7.0F, 19.0F, 4.0F, 14.0F, 32.0F, new CubeDeformation(0.0F))
+				.texOffs(106, 158).addBox(-3.0F, -7.0F, 0.0F, 6.0F, 14.0F, 19.0F, new CubeDeformation(0.0F)), PartPose.offset(61.5391F, 0.0F, 0.0F));
+
+		return LayerDefinition.create(meshdefinition, 256, 256);
 	}
 
 

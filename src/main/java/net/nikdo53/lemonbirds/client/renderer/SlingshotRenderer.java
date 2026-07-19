@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
@@ -21,6 +22,7 @@ import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 
 public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlockEntity> {
@@ -45,85 +47,114 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
     public void render(BirdSlingshotBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         if (!blockEntity.isCenter())
             return;
+
+        int time = Math.toIntExact(blockEntity.getLevel().getGameTime() % 360);
+
         Direction direction = blockEntity.getBlockState().getValue(BirdSlingshotBlock.FACING).getOpposite();
+        Vec3i normal = direction.getNormal().multiply(1);
+        VertexConsumer vertexConsumer = TEXTURE.buffer(bufferSource, RenderType::entityCutout);
 
         poseStack.pushPose();
-
         poseStack.translate(0.5, 1.5, 0.5);
-        poseStack.scale(-1.0F, -1.0F, 1.0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(direction.get2DDataValue() * 90));
 
-        VertexConsumer vertexConsumer = TEXTURE.buffer(bufferSource, RenderType::entityCutout);
-        modelBody.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+        int degrees = direction.getAxis() == Direction.Axis.Z ? direction.getOpposite().get2DDataValue() : direction.get2DDataValue();
+        poseStack.mulPose(Axis.YP.rotationDegrees(degrees * 90
+             //   + time *5
+        ));
 
-        poseStack.popPose();
+        Vec3 relative = blockEntity.getRelativeDummyPos(partialTick);
+        Vec3 center = blockEntity.getCenterPosition(null);
+        Vec3 birdPos = center.add(relative);
+        Vec3 lookVec = blockEntity.getLookVec(partialTick);
+        Vec3 opposite = lookVec.multiply(-1, -1, -1);
 
+        poseStack.mulPose(new Quaternionf().rotationXYZ(
+                0,
+                (float) Math.toRadians(opposite.x * 12),
+                0
+        ));
+
+        renderBlockbenchModel(modelBody, poseStack, vertexConsumer, packedLight, packedOverlay);
 
         Minecraft minecraft = Minecraft.getInstance();
         boolean isFirstPerson = !minecraft.gameRenderer.getMainCamera().isDetached();
         boolean isInvisible = blockEntity.controllingPlayer == minecraft.player && isFirstPerson;
 
+
         poseStack.pushPose();
-        poseStack.translate(0.0, 0.5, 0.0);
+        {
+            poseStack.mulPose(Axis.YP.rotationDegrees(180));
 
-        Vec3 relative = blockEntity.getRelativeDummyPos(partialTick);
-        Vec3 birdPos = blockEntity.getCenterPosition(null).add(relative);
-        Vec3 opposite = blockEntity.getLookVec(partialTick).multiply(-1, -1, -1);
+            poseStack.translate(-0.5, -2.0, 1.0);
 
-        poseStack.translate(birdPos.x(), birdPos.y(), birdPos.z());
 
-        if (direction.getAxis() != Direction.Axis.Z){
-            direction = direction.getOpposite();
+            poseStack.translate(0.5, birdPos.y(), lookVec.z());
+
+            float centerPoint = 2;
+            poseStack.translate(0, 0, centerPoint);
+
+            poseStack.mulPose(new Quaternionf().rotationXYZ(
+                    (float) Math.toRadians(opposite.y * 12),
+                    (float) Math.toRadians(opposite.x * 2),
+                    0
+            ));
+
+            poseStack.translate(0, 0, -centerPoint);
+
+
+            poseStack.pushPose();
+            {
+                poseStack.scale(2, 2, 2);
+                if (blockEntity.hasBirdItem() && !isInvisible) {
+                    itemRenderer.renderStatic(blockEntity.birdItem.getDefaultInstance(),
+                            ItemDisplayContext.GROUND,
+                            packedLight,
+                            packedOverlay,
+                            poseStack,
+                            bufferSource,
+                            blockEntity.getLevel(),
+                            53
+                    );
+                }
+            }
+            poseStack.popPose();
+
+            poseStack.pushPose();
+            {
+                poseStack.translate(-0.0, -3.8, -3);
+                renderBlockbenchModel(modelSupport, poseStack, vertexConsumer, packedLight, packedOverlay);
+
+
+                double distance = (lookVec.z + Math.abs(lookVec.y)) / 2;
+                double scale = (distance / 2) + 0.1;
+
+                poseStack.translate(0.0, 0.0,   -scale * 4 + 2.75 );
+                poseStack.scale(1.0F, 1.0F, (float) (scale + 0.3));
+                renderBlockbenchModel(modelStretch, poseStack, vertexConsumer, packedLight, packedOverlay);
+
+            }
+            poseStack.popPose();
+
+
         }
-
-        poseStack.mulPose(Axis.YP.rotationDegrees(direction.get2DDataValue() * 90));
-
-
-        poseStack.mulPose(new Quaternionf().rotationXYZ(
-                (float) Math.toRadians(opposite.y * 15),
-                (float) Math.toRadians(opposite.x * 15),
-                0
-        ));
-
-        if (blockEntity.hasBirdItem() && !isInvisible){
-                itemRenderer.renderStatic(blockEntity.birdItem.getDefaultInstance(),
-                        ItemDisplayContext.GROUND,
-                        packedLight,
-                        packedOverlay,
-                        poseStack,
-                        bufferSource,
-                        blockEntity.getLevel(),
-                        53
-                );
-        }
-
-        poseStack.pushPose();
-        poseStack.translate(2.0, 0.0, -3);
-
-        poseStack.pushPose();
-
-        poseStack.translate(0.0, 0.0, -relative.length() + 1.8);
-        poseStack.scale(1.0F, 1.0F, (float) ( 0.5 + relative.length() / 3.8));
-        modelStretch.render(poseStack, vertexConsumer, packedLight, packedOverlay);
-
         poseStack.popPose();
-
-
-        modelSupport.render(poseStack, vertexConsumer, packedLight, packedOverlay);
-
-        poseStack.popPose();
-
 
         poseStack.popPose();
 
     }
 
     @Override
-    public AABB getRenderBoundingBox(BirdSlingshotBlockEntity blockEntity) {
+    public @NotNull AABB getRenderBoundingBox(BirdSlingshotBlockEntity blockEntity) {
         return AABB.of(new BoundingBox(blockEntity.getBlockPos().above(3)).inflatedBy(3));
     }
 
-    int directionToDegrees(Direction direction) {
-        return direction.get2DDataValue() * 90;
+
+    public static void renderBlockbenchModel(ModelPart modelPart, PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay) {
+        poseStack.pushPose();
+        poseStack.scale(-1.0F, -1.0F, 1.0F);
+
+        modelPart.render(poseStack, vertexConsumer, packedLight, packedOverlay);
+
+        poseStack.popPose();
     }
 }

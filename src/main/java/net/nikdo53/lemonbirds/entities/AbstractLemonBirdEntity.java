@@ -1,54 +1,41 @@
 package net.nikdo53.lemonbirds.entities;
 
 import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
-import dev.ryanhcode.sable.api.command.SableCommandHelper;
-import dev.ryanhcode.sable.api.physics.PhysicsPipeline;
 import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.math.BoundingBox3i;
 import dev.ryanhcode.sable.companion.math.JOMLConversion;
 import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
-import dev.ryanhcode.sable.sublevel.SubLevel;
-import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.DustParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
-import net.minecraft.core.Vec3i;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.*;
 import net.nikdo53.lemonbirds.LemonBirds;
+import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
-import net.nikdo53.lemonbirds.blocks.FallingBirdBlockEntity;
 import net.nikdo53.lemonbirds.init.*;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
-import net.nikdo53.lemonbirds.util.LemonUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Boolean> DATA_HAS_ABILITY = SynchedEntityData.defineId(
@@ -59,6 +46,9 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             AbstractLemonBirdEntity.class, EntityDataSerializers.INT
     );
 
+    private static final EntityDataAccessor<Optional<UUID>> CONTROLLING_PLAYER_ID = SynchedEntityData.defineId(
+            AbstractLemonBirdEntity.class, EntityDataSerializers.OPTIONAL_UUID
+    );
 
     public AbstractLemonBirdEntity(EntityType<? extends AbstractLemonBirdEntity> entityType, Level level, Position pos) {
         super(entityType, pos.x(), pos.y(), pos.z(), level);
@@ -79,11 +69,32 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         return ModItems.RED_BIRD.asItem();
     }
 
+    @Override
+    public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
+        super.shoot(x, y, z, velocity, inaccuracy);
+        Entity owner = getOwner();
+        if (owner instanceof Player player) {
+            player.setData(ModDataAttachments.LEMON_BIRD, getId());
+        }
+    }
+
     public void onAbilityKey(){
         if (hasAbility()) {
             entityData.set(DATA_HAS_ABILITY, false);
             activateAbility();
         }
+    }
+
+    public void setControllingPlayer(@Nullable Player player) {
+        entityData.set(CONTROLLING_PLAYER_ID, Optional.ofNullable(player != null ? player.getUUID() : null));
+    }
+
+    public Optional<UUID> getControllingPlayer() {
+        return entityData.get(CONTROLLING_PLAYER_ID);
+    }
+
+    public boolean isControllingPlayer(@Nullable Player player) {
+        return getControllingPlayer().map(uuid -> uuid.equals(player != null ? player.getUUID() : null)).orElse(false);
     }
 
     protected abstract void activateAbility();
@@ -103,7 +114,9 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         super.defineSynchedData(builder);
         builder.define(DATA_HAS_ABILITY, true);
         builder.define(HIT_COOLDOWN, 0);
+        builder.define(CONTROLLING_PLAYER_ID, Optional.empty());
     }
+
 
     @Override
     public void tick() {
@@ -112,13 +125,29 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             entityData.set(HIT_COOLDOWN, entityData.get(HIT_COOLDOWN) - 1);
         }
 
-        if (level() instanceof ClientLevel clientLevel){
-            clientLevel.addParticle(ModParticles.LEMON_BIRD_TRAIL.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
+        if (level().isClientSide()){
+            level().addParticle(ModParticles.LEMON_BIRD_TRAIL.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
+        }
+
+        if (getOwner() instanceof Player player) {
+            setRot(player.getYRot(), player.getXRot());
+            this.yRotO = player.getYRot();
+            this.xRotO = player.getXRot();
+        }
+
+        if (level().isClientSide() && getControllingPlayer().isPresent()) {
+            BirdSlingshotBlockEntity.ClientThingy.trySetCamera(this, getControllingPlayer().get());
         }
     }
 
-    public void onBlockEntityDespawn(BlockPos pos, Level level){
 
+    @Override
+    public void moveTo(double x, double y, double z, float yRot, float xRot) {
+        this.setOldPosAndRot();
+        this.setPosRaw(x, y, z);
+        this.setYRot(yRot);
+        this.setXRot(xRot);
+        this.reapplyPosition();
     }
 
     @Override
@@ -130,16 +159,15 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
         Level level = level();
         BlockPos pos = result.getBlockPos().immutable();
+        if (level.getBlockState(pos).is(ModBlocks.SLING_SHOT))
+            return;
 
         Vec3 location = result.getLocation();
         Vec3 normal = location.subtract(pos.getX(), pos.getY(), pos.getZ()).subtract(0.5, 0.5, 0.5).multiply(-1, -1, -1);
-        System.out.println("normal = " + normal);
 
         Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, level.getBlockState(pos));
         double speed = 10.0 * movement.lengthSqr();
         double size = 0.1 * speed;
-
-        System.out.println("speed = " + speed);
 
         if (speed > 5 && getDestroyEffectivity().canDestroy) {
             BlockPos.betweenClosedStream(AABB.ofSize(location, size, size, size))
@@ -206,9 +234,28 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             }
         }
 
+        if (getControllingPlayer().isPresent()){
+            BirdSlingshotBlockEntity.ClientThingy.resetCamera(getControllingPlayer().get());
+        }
         turnIntoBlock();
 
         super.remove(reason);
+    }
+
+    @Override
+    public float getViewXRot(float partialTicks) {
+        if (getOwner() != null){
+            return getOwner().getViewXRot(partialTicks);
+        }
+        return super.getViewXRot(partialTicks);
+    }
+
+    @Override
+    public float getViewYRot(float partialTick) {
+        if (getOwner() != null){
+            return getOwner().getViewYRot(partialTick);
+        }
+        return super.getViewYRot(partialTick);
     }
 
     public void turnIntoBlock(){
@@ -218,7 +265,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             if (block.isEmpty()) return;
 
             BlockState state = block.get().defaultBlockState();
-            state.setValue(FallingBirdBlock.DESPAWNS, true);
+            state = state.setValue(FallingBirdBlock.DESPAWNS, true);
 
             BlockPos pos = getOnPos();
             level().setBlock(pos, state, 3);

@@ -36,8 +36,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 public class BirdItem extends Item implements ProjectileItem {
-    private final BiFunction<Level, Player, AbstractLemonBirdEntity> useFunction;
-    private final BiFunction<Level, Position, AbstractLemonBirdEntity> projectileFunction;
+    public final BiFunction<Level, Player, AbstractLemonBirdEntity> useFunction;
+    public final BiFunction<Level, Position, AbstractLemonBirdEntity> projectileFunction;
     private final Supplier<Block> block;
 
     public BirdItem(Properties properties, @Nullable Supplier<Block> block, BiFunction<Level, Player, AbstractLemonBirdEntity> useFunction, BiFunction<Level, Position, AbstractLemonBirdEntity> projectileFunction) {
@@ -78,8 +78,6 @@ public class BirdItem extends Item implements ProjectileItem {
             bird.setItem(itemstack);
             bird.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
             level.addFreshEntity(bird);
-
-            player.setData(ModDataAttachments.LEMON_BIRD, bird.getId());
         }
 
         player.awardStat(Stats.ITEM_USED.get(this));
@@ -97,6 +95,7 @@ public class BirdItem extends Item implements ProjectileItem {
     public AbstractLemonBirdEntity asProjectile(Level level, Position pos, Direction direction) {
         return asProjectile(level, pos, this.getDefaultInstance(), direction);
     }
+
 
 
 
