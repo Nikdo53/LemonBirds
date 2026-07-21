@@ -5,7 +5,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.nikdo53.lemonbirds.init.ModEntities;
+import net.nikdo53.lemonbirds.init.ModParticles;
 
 public class DummyProjectile extends ThrowableProjectile {
     public DummyProjectile(EntityType<? extends ThrowableProjectile> entityType, Level level) {
@@ -16,12 +19,26 @@ public class DummyProjectile extends ThrowableProjectile {
         super(ModEntities.DUMMY_PROJECTILE.get(), x, y, z, level);
     }
 
-    public DummyProjectile(LivingEntity shooter, Level level) {
-        super(ModEntities.DUMMY_PROJECTILE.get(), shooter, level);
+    public DummyProjectile( Level level) {
+        super(ModEntities.DUMMY_PROJECTILE.get(), level);
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
 
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        discard();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (level().isClientSide()){
+            Vec3 pos = this.position();
+            level().addParticle(ModParticles.LEMON_BIRD_TRAIL_PREVIEW.get(), pos.x, pos.y, pos.z, 0, 0,0);
+        }
     }
 }

@@ -11,6 +11,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
@@ -105,5 +107,15 @@ public class BirdSlingshotBlock extends AbstractMultiBlock implements IPreviewab
         }
 
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return ((level1, pos, state1, blockEntity) -> {
+            if (blockEntity instanceof BirdSlingshotBlockEntity fallingBirdBlockEntity) {
+                fallingBirdBlockEntity.tick(level1, pos, state1);
+            }
+        });
+
     }
 }

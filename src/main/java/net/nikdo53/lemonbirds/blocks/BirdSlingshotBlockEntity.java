@@ -11,12 +11,16 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
+import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.entities.DummyEntity;
+import net.nikdo53.lemonbirds.entities.DummyProjectile;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
+import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.network.SlingshotDummyPosPayload;
@@ -66,6 +70,13 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
             ClientThingy.beginControlClient(player, this);
         }
 
+    }
+
+    public void tick(Level level, BlockPos pos, BlockState state){
+         if (isBeingControlled() && level.getGameTime() % 40 == 0){
+             DummyProjectile projectile = new DummyProjectile(level);
+             shoot(projectile);
+         }
     }
 
     public Vec3 getCenterPosition(@Nullable BlockPos pos){
@@ -145,7 +156,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public void shoot(@NotNull Projectile projectile){
         Vector3f pos = getRelativeDummyPos(1).toVector3f().mul(-1);
 
-        projectile.shoot(pos.x, pos.y, pos.z, 1f, 0.1f);
+        float velocity = hasBirdItem() ? birdItem.getFlyingSpeed() : 1.0F;
+        projectile.shoot(pos.x, pos.y, pos.z, velocity * 2, 0.1f);
         projectile.moveTo(getCenterPosition(this.getBlockPos()).add(getRelativeDummyPos(1)));
         getLevel().addFreshEntity(projectile);
     }

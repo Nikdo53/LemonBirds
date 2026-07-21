@@ -18,6 +18,7 @@ public interface ModItems {
     DeferredItem<BirdItem> YELLOW_BIRD = ITEMS.register("yellow_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.YELLOW_BIRD_BLOCK, YellowLemonBirdEntity::new, YellowLemonBirdEntity::new));
     DeferredItem<BirdItem> BLUE_BIRD = ITEMS.register("blue_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.BLUE_BIRD_BLOCK, BlueLemonBirdEntity::new, BlueLemonBirdEntity::new));
     DeferredItem<BirdItem> MATILDA_BIRD = ITEMS.register("matilda_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.MATILDA_BIRD_BLOCK, MatildaLemonBirdEntity::new, MatildaLemonBirdEntity::new));
+    DeferredItem<BirdItem> TERENCE_BIRD = ITEMS.register("terence_bird", () -> new BirdItem(new Item.Properties(), ModBlocks.TERENCE_BIRD_BLOCK, TerenceLemonBirdEntity::new, TerenceLemonBirdEntity::new));
 
     AbstractLemonBirdEntity.DestroyEffectivity SCREAM_EFFECTIVITY = new AbstractLemonBirdEntity.DestroyEffectivity(0.8, 0.8, 0.8, 0.8, false);
 

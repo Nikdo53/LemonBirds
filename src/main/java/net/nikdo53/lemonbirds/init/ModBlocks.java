@@ -22,7 +22,8 @@ public interface ModBlocks {
     DeferredBlock<Block> YELLOW_BIRD_BLOCK = BLOCKS.register("yellow_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> BLUE_BIRD_BLOCK = BLOCKS.register("blue_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> BOMB_BIRD_BLOCK = BLOCKS.register("bomb_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> MATILDA_BIRD_BLOCK = BLOCKS.register("matilda_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> MATILDA_BIRD_BLOCK = BLOCKS.register("matilda_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion(), FallingBirdBlock.MATILDA_SHAPE));
+    DeferredBlock<Block> TERENCE_BIRD_BLOCK = BLOCKS.register("terence_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion(), FallingBirdBlock.TERENCE_SHAPE));
 
     DeferredBlock<Block> SLING_SHOT = registerWithItem("bird_sling_shot", () -> new BirdSlingshotBlock(BlockBehaviour.Properties.of().noOcclusion()));
 

@@ -32,6 +32,10 @@ public interface ModEntities {
             .sized(1.0f, 1.5f)
             .build(LemonBirds.loc("matilda_lemon_bird").toString()));
 
+    Supplier<EntityType<TerenceLemonBirdEntity>> TERENCE_LEMON_BIRD = ENTITIES.register("terence_lemon_bird", () -> EntityType.Builder.<TerenceLemonBirdEntity>of(TerenceLemonBirdEntity::new, MobCategory.MISC)
+            .sized(3.0f, 3.0f)
+            .build(LemonBirds.loc("terence_lemon_bird").toString()));
+
 
 
     Supplier<EntityType<FakeLemonBirdEntity>> RED_SCREAM_ENTITY = ENTITIES.register("red_scream_entity", () -> EntityType.Builder.<FakeLemonBirdEntity>of(FakeLemonBirdEntity::new, MobCategory.MISC)
@@ -45,8 +49,9 @@ public interface ModEntities {
     Supplier<EntityType<DummyEntity>> DUMMY = ENTITIES.register("dummy", () -> EntityType.Builder.<DummyEntity>of(DummyEntity::new, MobCategory.MISC)
             .sized(1.0f, 1.0f).eyeHeight(0.8f)
             .build(LemonBirds.loc("dummy").toString()));
+
     Supplier<EntityType<DummyProjectile>> DUMMY_PROJECTILE = ENTITIES.register("dummy_projectile", () -> EntityType.Builder.<DummyProjectile>of(DummyProjectile::new, MobCategory.MISC)
-            .sized(1.0f, 1.0f)
+            .sized(0.5f, 0.5f)
             .build(LemonBirds.loc("dummy_projectile").toString()));
 
 

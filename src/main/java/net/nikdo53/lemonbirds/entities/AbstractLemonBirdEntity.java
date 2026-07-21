@@ -14,6 +14,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -159,6 +160,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
         Level level = level();
         BlockPos pos = result.getBlockPos().immutable();
+        BirdItem birdItem = (BirdItem) getItem().getItem();
         if (level.getBlockState(pos).is(ModBlocks.SLING_SHOT))
             return;
 
@@ -167,7 +169,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
         Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, level.getBlockState(pos));
         double speed = 10.0 * movement.lengthSqr();
-        double size = 0.1 * speed;
+        double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed());
 
         if (speed > 5 && getDestroyEffectivity().canDestroy) {
             BlockPos.betweenClosedStream(AABB.ofSize(location, size, size, size))
@@ -222,7 +224,9 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
            // movement = subLevel.logicalPose().transformNormalInverse(movement);
 
             RigidBodyHandle handle = RigidBodyHandle.of(subLevel);
-            handle.applyLinearImpulse(JOMLConversion.toJOML(movement));
+            if (handle.isValid()) {
+                handle.applyLinearImpulse(JOMLConversion.toJOML(movement));
+            }
         }
     }
 
@@ -262,54 +266,65 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         Item item = getItem().getItem();
         if (item instanceof BirdItem birdItem) {
             Optional<Block> block = birdItem.getBlock();
-            if (block.isEmpty()) return;
+            if (block.isEmpty() || !(block.get() instanceof FallingBirdBlock multiBlock)) return;
 
-            BlockState state = block.get().defaultBlockState();
+            BlockState state = multiBlock.defaultBlockState();
             state = state.setValue(FallingBirdBlock.DESPAWNS, true);
 
             BlockPos pos = getOnPos();
+            List<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(level(), null, pos, state);
+
             level().setBlock(pos, state, 3);
             level().blockEntityChanged(pos);
 
-            if (level() instanceof ServerLevel serverLevel) {
-                final BoundingBox3i bounds = new BoundingBox3i(pos, pos);
-                bounds.set(
-                        bounds.minX - 1,
-                        bounds.minY - 1,
-                        bounds.minZ - 1,
-                        bounds.maxX + 1,
-                        bounds.maxY + 1,
-                        bounds.maxZ + 1
-                );
-
-                ServerSubLevel subLevel;
-                try {
-                    subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, List.of(pos), bounds);
-                } catch (ArrayIndexOutOfBoundsException e){
-                    LemonBirds.LOGGER.error("Unable to create sub-level cuz sable sucks");
-                    return;
-                }
-
-                Vec2 rotationVector = this.getRotationVector();
-                Vec3 deltaMovement = getDeltaMovement().scale(-1);
-                if (subLevel != null) {
-                    SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(serverLevel);
-                    Pose3d pose = subLevel.logicalPose();
-
-                    Quaterniond orientation = new Quaterniond();
-
-                    orientation.rotateY(-Math.toRadians(rotationVector.y));
-                    orientation.rotateX(Math.toRadians(rotationVector.x));
-
-                    pose.orientation().set(orientation);
-                    system.getPipeline().teleport(subLevel, pose.position(), pose.orientation());
-
-                }
-
-                LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(5, (lvl) -> {
-                    if (subLevel != null) {
-                        applyPhysics(lvl, subLevel, deltaMovement, 10);
+            if (level() instanceof ServerLevel) {
+                LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(2, (serverLevel) -> {
+                    final BoundingBox3i bounds = BoundingBox3i.from(shape);
+                    if (bounds == null){
+                        LemonBirds.LOGGER.error("Failed to create bounding box for falling bird block at {}", pos);
+                        return;
                     }
+
+                    bounds.set(
+                            bounds.minX - 1,
+                            bounds.minY - 1,
+                            bounds.minZ - 1,
+                            bounds.maxX + 1,
+                            bounds.maxY + 1,
+                            bounds.maxZ + 1
+                    );
+
+
+                    ServerSubLevel subLevel;
+                    try {
+                        subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, shape, bounds);
+                    } catch (ArrayIndexOutOfBoundsException e){
+                        LemonBirds.LOGGER.error("Unable to create sub-level cuz sable sucks");
+                        return;
+                    }
+
+                    Vec2 rotationVector = this.getRotationVector();
+                    Vec3 deltaMovement = getDeltaMovement().scale(-1);
+                    if (subLevel != null) {
+                        SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(serverLevel);
+                        Pose3d pose = subLevel.logicalPose();
+
+                        Quaterniond orientation = new Quaterniond();
+
+                        orientation.rotateY(-Math.toRadians(rotationVector.y));
+                        orientation.rotateX(Math.toRadians(rotationVector.x));
+
+                        pose.orientation().set(orientation);
+                        system.getPipeline().teleport(subLevel, pose.position(), pose.orientation());
+
+                    }
+
+                    LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(5, (lvl) -> {
+                        if (subLevel != null) {
+                            applyPhysics(lvl, subLevel, deltaMovement, 10);
+                        }
+                    }));
+
                 }));
 
             }

@@ -24,11 +24,13 @@ import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.items.BirdItem;
+import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
+import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FallingBirdBlockEntity extends BlockEntity {
+public class FallingBirdBlockEntity extends AbstractMultiBlockEntity {
     public int tickCount = 0;
     public static final int MAX_TICKS = 120;
 
@@ -41,6 +43,13 @@ public class FallingBirdBlockEntity extends BlockEntity {
     }
 
     public void tick(Level level, BlockPos pos, BlockState state){
+        if (!isCenter()){
+            BlockState centerState = level.getBlockState(getCenter());
+            if (!IMultiBlock.isSameMultiblock(level, centerState, state, getCenter(), pos)) {
+                level.destroyBlock(pos, false);
+                level.removeBlockEntity(pos);
+            }
+        }
             tickCount++;
             if ((tickCount >= getMaxTicks() && !level.isClientSide())) {
 
@@ -48,8 +57,10 @@ public class FallingBirdBlockEntity extends BlockEntity {
                     BombLemonBirdEntity.birdExplosion(level, pos.getCenter(), null);
                 }
 
-                level.removeBlock(pos, false);
-                level.removeBlockEntity(pos);
+                for (BlockPos blockPos : getFullBlockShapeCache()) {
+                    level.removeBlock(blockPos, false);
+                    level.removeBlockEntity(blockPos);
+                }
 
             }
     }

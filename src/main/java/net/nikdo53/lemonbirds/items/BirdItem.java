@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
+import net.nikdo53.lemonbirds.init.ModItems;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -65,6 +66,10 @@ public class BirdItem extends Item implements ProjectileItem {
         return InteractionResult.PASS;
     }
 
+    public float getFlyingSpeed() {
+        return this == ModItems.TERENCE_BIRD.get() ? 0.5F : 1.0F;
+    }
+
     @Override
     public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
         return armorType == EquipmentSlot.HEAD;
@@ -76,7 +81,7 @@ public class BirdItem extends Item implements ProjectileItem {
         if (!level.isClientSide) {
             AbstractLemonBirdEntity bird = useFunction.apply(level, player);
             bird.setItem(itemstack);
-            bird.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+            bird.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, getFlyingSpeed() * 1.5f, 1.0F);
             level.addFreshEntity(bird);
         }
 

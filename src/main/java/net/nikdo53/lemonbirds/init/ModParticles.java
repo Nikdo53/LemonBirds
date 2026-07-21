@@ -13,5 +13,7 @@ public interface ModParticles {
     DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, LemonBirds.MOD_ID);
 
     Supplier<SimpleParticleType> LEMON_BIRD_TRAIL = PARTICLES.register("lemon_bird_trail", () -> new SimpleParticleType(false));
+    Supplier<SimpleParticleType> LEMON_BIRD_TRAIL_PREVIEW = PARTICLES.register("lemon_bird_trail_preview", () -> new SimpleParticleType(false));
+
 
 }
