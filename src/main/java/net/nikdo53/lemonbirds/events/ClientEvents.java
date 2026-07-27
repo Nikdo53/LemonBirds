@@ -24,6 +24,7 @@ import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
+import net.nikdo53.lemonbirds.init.ModKeyBinds;
 import net.nikdo53.lemonbirds.network.ActivateLemonBirdPayload;
 import net.nikdo53.lemonbirds.network.SlingshotKeyPressPayload;
 import org.joml.Vector3f;
@@ -40,7 +41,7 @@ public class ClientEvents {
 
         if (player == null || level == null) return;
 
-        if (event.getKey() == InputConstants.KEY_K) {
+        if (event.getKey() == ModKeyBinds.BIRD_ABILITY.getKey().getValue()) {
 
             int entityId = player.getData(ModDataAttachments.LEMON_BIRD);
             if (entityId == -1) return;

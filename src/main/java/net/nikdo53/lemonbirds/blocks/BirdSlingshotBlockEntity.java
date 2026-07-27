@@ -22,6 +22,7 @@ import net.nikdo53.lemonbirds.entities.DummyProjectile;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
+import net.nikdo53.lemonbirds.init.ModKeyBinds;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.network.SlingshotDummyPosPayload;
 import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
@@ -103,11 +104,11 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     }
 
     public void onKeyPressed(Player player, int key){
-        if (key == InputConstants.KEY_E){
+        if (key == InputConstants.KEY_E || key == InputConstants.KEY_ESCAPE){
             endControl(player);
         }
 
-        if (key == InputConstants.KEY_H && birdItem != null){
+        if (key == ModKeyBinds.SLINGSHOT_LAUNCH.getKey().getValue() && birdItem != null){
             AbstractLemonBirdEntity bird = birdItem.useFunction.apply(level, player);
             bird.setOwner(player);
             bird.setItem(birdItem.getDefaultInstance());

@@ -277,6 +277,9 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             level().setBlock(pos, state, 3);
             level().blockEntityChanged(pos);
 
+            Vec2 rotationVector = this.getRotationVector();
+            Vec3 deltaMovement = getDeltaMovement().scale(-1);
+
             if (level() instanceof ServerLevel) {
                 LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(2, (serverLevel) -> {
                     final BoundingBox3i bounds = BoundingBox3i.from(shape);
@@ -298,13 +301,12 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
                     ServerSubLevel subLevel;
                     try {
                         subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, shape, bounds);
+                        subLevel.setName(item.builtInRegistryHolder().getRegisteredName());
                     } catch (ArrayIndexOutOfBoundsException e){
                         LemonBirds.LOGGER.error("Unable to create sub-level cuz sable sucks");
                         return;
                     }
 
-                    Vec2 rotationVector = this.getRotationVector();
-                    Vec3 deltaMovement = getDeltaMovement().scale(-1);
                     if (subLevel != null) {
                         SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(serverLevel);
                         Pose3d pose = subLevel.logicalPose();

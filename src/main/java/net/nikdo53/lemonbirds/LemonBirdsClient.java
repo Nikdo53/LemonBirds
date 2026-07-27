@@ -6,11 +6,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
 import net.nikdo53.lemonbirds.client.renderer.*;
 import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModEntities;
+import net.nikdo53.lemonbirds.init.ModKeyBinds;
 import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 
@@ -54,6 +56,13 @@ public class LemonBirdsClient {
         event.registerLayerDefinition(BirdSlingshotModel.SUPPORT_LAYER, BirdSlingshotModel::supportLayer);
         event.registerLayerDefinition(BirdSlingshotModel.STRETCH_LAYER, BirdSlingshotModel::stretchLayer);
 
+    }
+
+    @SubscribeEvent
+    public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event)
+    {
+        event.register(ModKeyBinds.BIRD_ABILITY);
+        event.register(ModKeyBinds.SLINGSHOT_LAUNCH);
     }
 
 
