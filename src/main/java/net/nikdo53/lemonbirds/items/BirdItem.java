@@ -24,6 +24,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.init.ModItems;
@@ -101,6 +102,18 @@ public class BirdItem extends Item implements ProjectileItem {
         return asProjectile(level, pos, this.getDefaultInstance(), direction);
     }
 
+    public Vec3 getSlingshotModelOffset(){
+        if (this == ModItems.TERENCE_BIRD.get()){
+            return new Vec3(0, -1, -1);
+        }
+
+        if (this == ModItems.BOMB_BIRD.get()){
+            return new Vec3(0, -0.5, -0.5);
+        }
+
+
+        return new Vec3(0, 0, 0);
+    }
 
 
 

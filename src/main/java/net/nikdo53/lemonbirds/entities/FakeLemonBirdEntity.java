@@ -28,7 +28,7 @@ public class FakeLemonBirdEntity extends AbstractLemonBirdEntity{
     }
 
     @Override
-    protected void activateAbility() {
+    protected void activateAbility(float xRot, float yRot) {
 
     }
 }

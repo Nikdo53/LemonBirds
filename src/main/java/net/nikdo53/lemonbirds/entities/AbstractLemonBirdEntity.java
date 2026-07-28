@@ -79,10 +79,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         }
     }
 
-    public void onAbilityKey(){
+    public void onAbilityKey(float xRot, float yRot){
         if (hasAbility()) {
             entityData.set(DATA_HAS_ABILITY, false);
-            activateAbility();
+            activateAbility(xRot, yRot);
         }
     }
 
@@ -98,7 +98,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         return getControllingPlayer().map(uuid -> uuid.equals(player != null ? player.getUUID() : null)).orElse(false);
     }
 
-    protected abstract void activateAbility();
+    protected abstract void activateAbility(float xRot, float yRot);
 
     public void setHasAbility(boolean hasAbility){
         if (getOwner() != null) {

@@ -21,11 +21,11 @@ public class TerenceLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     public DestroyEffectivity getDestroyEffectivity() {
-        return new DestroyEffectivity(0.99, 0.99, 0.99, 0.99);
+        return new DestroyEffectivity(0.95, 0.90, 0.98, 0.98);
     }
 
     @Override
-    protected void activateAbility() {
+    protected void activateAbility(float xRot, float yRot) {
 
     }
 }

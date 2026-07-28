@@ -7,7 +7,12 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.Input;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -24,18 +29,39 @@ import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.init.ModKeyBinds;
 import net.nikdo53.lemonbirds.items.BirdItem;
-import net.nikdo53.lemonbirds.network.SlingshotDummyPosPayload;
+import net.nikdo53.lemonbirds.network.SlingshotRotationPayload;
 import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.UUID;
 
 public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
+    // Measurements taken from BirdSlingshotModel, so that the block entity and the renderer agree on where the sling is.
+    /** Height of the fork tips - where the bands are anchored - above the bottom of the center block. */
+    public static final double ANCHOR_HEIGHT = 1.5 + 70.2843 / 16.0;
+    /** How far behind the fork tips the bands leave the fork. */
+    public static final double BAND_START = 8.0 / 16.0;
+    /** Length of the bands as they are modelled, meaning with nothing pulling on them. */
+    public static final double BAND_REST_LENGTH = 51.0 / 16.0;
+    /** Distance from the fork tips to the pouch while the bands are relaxed. */
+    public static final double POUCH_REST_DISTANCE = BAND_START + BAND_REST_LENGTH;
+
+    public static final float MAX_PULL = 3.8F;
+    public static final float MAX_YAW = 30;
+    public static final float MAX_PITCH = 30;
+
     public BirdItem birdItem = null;
-    public Vec3 lookVec = new Vec3(0, 0, 0);
-    public Vec3 lookVecOld = new Vec3(0, 0, 0);
+
+    /** Aim rotation, in degrees, relative to the way the slingshot is facing. Positive yaw aims left, positive pitch aims up. */
+    public float yaw = 0;
+    public float pitch = 0;
+    /** How far the pouch is pulled back, in blocks. */
+    public float pull = 0;
+
+    public float yawOld = 0;
+    public float pitchOld = 0;
+    public float pullOld = 0;
 
     public DummyEntity dummyEntity = null;
     public Player controllingPlayer = null;
@@ -62,7 +88,7 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         controllingPlayer = player;
 
         dummyEntity = new DummyEntity(level, this.getBlockPos(), player);
-        dummyEntity.moveTo(getCenterPosition(this.getBlockPos()));
+        moveDummyToPouch();
         level.addFreshEntity(dummyEntity);
 
         player.setData(ModDataAttachments.SLINGSHOT, this.getBlockPos());
@@ -80,12 +106,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
          }
     }
 
-    public Vec3 getCenterPosition(@Nullable BlockPos pos){
-        Vec3i normal = getDirection().getNormal().multiply(-1);
-        Vec3 posVec = pos == null ? new Vec3(0.5, 0.5, 0.5) : pos.getCenter();
-        return posVec.add(0,5.5,0).add(normal.getX(), normal.getY(), normal.getZ());
-    }
-
     public void endControl(@Nullable Player player){
         if (player != null) {
             if (player.level().isClientSide()) {
@@ -99,8 +119,9 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         dummyEntity.discard();
         dummyEntity = null;
 
-        lookVec = new Vec3(0, 0, 0);
-        lookVecOld = new Vec3(0, 0, 0);
+        yaw = yawOld = 0;
+        pitch = pitchOld = 0;
+        pull = pullOld = 0;
     }
 
     public void onKeyPressed(Player player, int key){
@@ -115,58 +136,122 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
 
             shoot(bird);
             endControl(player);
+            birdItem = null;
             bird.setControllingPlayer(player);
         }
     }
 
-    public void updateDummyPos(Vec3 lookVec){
-        this.lookVecOld = this.lookVec;
-        this.lookVec = lookVec;
+    public void updateRotation(float yaw, float pitch, float pull){
+        this.yawOld = this.yaw;
+        this.pitchOld = this.pitch;
+        this.pullOld = this.pull;
 
-        Vec3 relativeDummyPos = getRelativeDummyPos(1);
-       if (dummyEntity != null) {
-           Vec3 pos = getCenterPosition(this.getBlockPos()).add(relativeDummyPos);
-           dummyEntity.moveTo(pos.x(), pos.y(), pos.z());
-       }
+        this.yaw = Mth.clamp(yaw, -MAX_YAW, MAX_YAW);
+        this.pitch = Mth.clamp(pitch, -MAX_PITCH, MAX_PITCH);
+        this.pull = Mth.clamp(pull, 0, MAX_PULL);
+
+        moveDummyToPouch();
+    }
+
+    /** Keeps the camera sat in the pouch, so that what the player sees lines up with what the renderer draws. */
+    private void moveDummyToPouch(){
+        if (dummyEntity == null) return;
+
+        Vec3 pos = getPouchPosition(1).subtract(0, dummyEntity.getEyeHeight(), 0);
+        dummyEntity.moveTo(pos.x(), pos.y(), pos.z());
     }
 
     private @NotNull Direction getDirection() {
         return getBlockState().getValue(BirdSlingshotBlock.FACING);
     }
 
-    public Vec3 getRelativeDummyPos(float partialTick){
+    /** The fork tips, which the bands hang from and the pouch swings around. */
+    public Vec3 getAnchorPosition(BlockPos pos){
+        return new Vec3(pos.getX() + 0.5, pos.getY() + ANCHOR_HEIGHT, pos.getZ() + 0.5);
+    }
+
+    /** Where the pouch - and with it the bird and the camera - has ended up. */
+    public Vec3 getPouchPosition(float partialTick){
+        return getAnchorPosition(this.getBlockPos()).add(getRelativePouchPos(partialTick));
+    }
+
+    public Vec3 getRelativePouchPos(float partialTick){
+        return toWorldSpace(getAimVec(partialTick).scale(getPouchDistance(partialTick)));
+    }
+
+    /** How far the pouch hangs behind the fork tips: the slack in the bands plus whatever has been pulled on top of it. */
+    public double getPouchDistance(float partialTick){
+        return POUCH_REST_DISTANCE + getPull(partialTick);
+    }
+
+    /** Direction the bird gets launched in, opposite to the way the pouch is pulled. */
+    public Vec3 getShootDirection(float partialTick){
+        return toWorldSpace(getAimVec(partialTick)).scale(-1);
+    }
+
+    private Vec3 toWorldSpace(Vec3 local){
         Direction direction = getDirection();
-        Vec3 lookVec = getLookVec(partialTick);
 
         return switch (direction) {
-            case NORTH -> new Vec3(-lookVec.x, lookVec.y, lookVec.z);
-            case SOUTH -> new Vec3(lookVec.x, lookVec.y, -lookVec.z);
-            case EAST -> new Vec3(-lookVec.z, lookVec.y, -lookVec.x);
-           case WEST -> new Vec3(lookVec.z, lookVec.y, lookVec.x);
+            case NORTH -> new Vec3(-local.x, local.y, local.z);
+            case SOUTH -> new Vec3(local.x, local.y, -local.z);
+            case EAST -> new Vec3(-local.z, local.y, -local.x);
+           case WEST -> new Vec3(local.z, local.y, local.x);
            default -> throw new IllegalArgumentException("Invalid direction: " + direction);
        };
     }
 
-    public Vec3 getLookVec(float partialTick){
-        double x = Mth.lerp(partialTick, lookVecOld.x, lookVec.x);
-        double y = Mth.lerp(partialTick, lookVecOld.y, lookVec.y);
-        double z = Mth.lerp(partialTick, lookVecOld.z, lookVec.z);
-        return new Vec3(x, y, z);
+    /** Unit vector pointing backwards along the aim, in slingshot-local space. */
+    public Vec3 getAimVec(float partialTick){
+        double yawRad = Math.toRadians(getYaw(partialTick));
+        double pitchRad = Math.toRadians(getPitch(partialTick));
+        double horizontal = Math.cos(pitchRad);
+
+        return new Vec3(
+                Math.sin(yawRad) * horizontal,
+                Math.sin(pitchRad),
+                Math.cos(yawRad) * horizontal
+        );
+    }
+
+    public float getYaw(float partialTick){
+        return Mth.lerp(partialTick, yawOld, yaw);
+    }
+
+    public float getPitch(float partialTick){
+        return Mth.lerp(partialTick, pitchOld, pitch);
+    }
+
+    public float getPull(float partialTick){
+        return Mth.lerp(partialTick, pullOld, pull);
     }
 
     public void shoot(@NotNull Projectile projectile){
-        Vector3f pos = getRelativeDummyPos(1).toVector3f().mul(-1);
+        Vec3 direction = getShootDirection(1);
 
         float velocity = hasBirdItem() ? birdItem.getFlyingSpeed() : 1.0F;
-        projectile.shoot(pos.x, pos.y, pos.z, velocity * 2, 0.1f);
-        projectile.moveTo(getCenterPosition(this.getBlockPos()).add(getRelativeDummyPos(1)));
+        projectile.shoot(direction.x(), direction.y(), direction.z(), velocity * 2, 0.1f);
+        projectile.moveTo(getPouchPosition(1));
         getLevel().addFreshEntity(projectile);
     }
 
 
-    public static class ClientThingy{
-        public static final float MAX_DISTANCE = 15;
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        if (birdItem != null) tag.putString("birdItem", BuiltInRegistries.ITEM.getKey(birdItem).toString());
+    }
 
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        String string = tag.getString("birdItem");
+        if (!string.isBlank()){
+            birdItem = (BirdItem) BuiltInRegistries.ITEM.get(ResourceLocation.parse(string));
+        }
+    }
+
+    public static class ClientThingy{
         public static void trySetCamera(AbstractLemonBirdEntity entity, UUID uuid){
             Minecraft minecraft = Minecraft.getInstance();
             if (!minecraft.player.getUUID().equals(uuid)) return;
@@ -193,53 +278,36 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
 
         public static void onInput(BirdSlingshotBlockEntity blockEntity, Input input){
-            double x = blockEntity.lookVec.x;
-            float sensitivity = 0.1f;
+            float rotationSensitivity = 2.0f;
+            float pullSensitivity = 0.1f;
+
+            float yaw = blockEntity.yaw;
             if (input.left != input.right){
                 if (input.left){
-                    x+= sensitivity;
+                    yaw += rotationSensitivity;
                 } else {
-                    x+= -sensitivity;
+                    yaw -= rotationSensitivity;
                 }
             }
 
 
-            double y = blockEntity.lookVec.y;
+            float pitch = blockEntity.pitch;
             if (input.jumping != input.shiftKeyDown){
                 if (input.jumping){
-                    y+= sensitivity;
+                    pitch += rotationSensitivity;
                 } else {
-                    y+= -sensitivity;
+                    pitch -= rotationSensitivity;
                 }
             }
 
 
-            double z = blockEntity.lookVec.z;
+            float pull = blockEntity.pull;
             if (input.forwardImpulse != 0){
-                z -= input.forwardImpulse * sensitivity;
+                pull -= input.forwardImpulse * pullSensitivity;
             }
 
-            if (z < 0) return;
-
-            if (isMaxDistance(x, y, z)){
-                boolean isMaxDistance = true;
-                for (int i = 0; i < 3; i++) {
-                    z -= sensitivity;
-                    if (!isMaxDistance(x, y, z)) {
-                        isMaxDistance = false;
-                        break;
-                    };
-                }
-                if (isMaxDistance)
-                    return;
-            }
-
-            blockEntity.updateDummyPos(new Vec3(x, y, z));
-            PacketDistributor.sendToServer(new SlingshotDummyPosPayload(x, y, z));
-        }
-
-        private static boolean isMaxDistance(double x, double y, double z) {
-            return new Vec3(x, y * 1.5, z).lengthSqr() > MAX_DISTANCE;
+            blockEntity.updateRotation(yaw, pitch, pull);
+            PacketDistributor.sendToServer(new SlingshotRotationPayload(yaw, pitch, pull));
         }
     }
 

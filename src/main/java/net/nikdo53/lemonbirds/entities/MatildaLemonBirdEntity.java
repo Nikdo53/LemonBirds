@@ -35,7 +35,7 @@ public class MatildaLemonBirdEntity extends AbstractLemonBirdEntity{
     }
 
     @Override
-    protected void activateAbility() {
+    protected void activateAbility(float xRot, float yRot) {
         if (level().isClientSide()) return;
         this.entityData.set(ACTIVE_ABILITY_TICKS, 20);
     }

@@ -13,9 +13,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.nikdo53.lemonbirds.LemonBirds;
@@ -23,10 +21,16 @@ import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Quaternionf;
 
 public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlockEntity> {
     static final Material TEXTURE = new Material(TextureAtlas.LOCATION_BLOCKS, LemonBirds.loc("block/bird_slingshot"));
+
+    /** Height the model is drawn at, so that its own offsets land the base plate on the bottom of the block. */
+    static final double MODEL_ORIGIN_Y = 1.5;
+    /** The fork tips, in model space. Sits on the axis the frame turns around, so the bands stay put while it swings. */
+    static final double ANCHOR_Y = BirdSlingshotBlockEntity.ANCHOR_HEIGHT - MODEL_ORIGIN_Y;
+    /** How far in front of the pouch the bird sits, so it rests against the cradle instead of inside it. */
+    static final double BIRD_INSET = 0.5;
 
     final BlockEntityRendererProvider.Context context;
     final ItemRenderer itemRenderer;
@@ -48,64 +52,64 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
         if (!blockEntity.isCenter())
             return;
 
-        int time = Math.toIntExact(blockEntity.getLevel().getGameTime() % 360);
-
         Direction direction = blockEntity.getBlockState().getValue(BirdSlingshotBlock.FACING).getOpposite();
-        Vec3i normal = direction.getNormal().multiply(1);
         VertexConsumer vertexConsumer = TEXTURE.buffer(bufferSource, RenderType::entityCutout);
 
+        float yaw = blockEntity.getYaw(partialTick);
+        float pitch = blockEntity.getPitch(partialTick);
+        double pouchDistance = blockEntity.getPouchDistance(partialTick);
+
         poseStack.pushPose();
-        poseStack.translate(0.5, 1.5, 0.5);
+        poseStack.translate(0.5, MODEL_ORIGIN_Y, 0.5);
 
         int degrees = direction.getAxis() == Direction.Axis.Z ? direction.getOpposite().get2DDataValue() : direction.get2DDataValue();
-        poseStack.mulPose(Axis.YP.rotationDegrees(degrees * 90
-             //   + time *5
-        ));
+        poseStack.mulPose(Axis.YP.rotationDegrees(degrees * 90));
 
-        Vec3 relative = blockEntity.getRelativeDummyPos(partialTick);
-        Vec3 center = blockEntity.getCenterPosition(null);
-        Vec3 birdPos = center.add(relative);
-        Vec3 lookVec = blockEntity.getLookVec(partialTick);
-        Vec3 opposite = lookVec.multiply(-1, -1, -1);
-
-        poseStack.mulPose(new Quaternionf().rotationXYZ(
-                0,
-                (float) Math.toRadians(opposite.x * 12),
-                0
-        ));
-
+        // the whole frame swings around to follow the aim, taking the fork tips - and so the bands - with it
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
         renderBlockbenchModel(modelBody, poseStack, vertexConsumer, packedLight, packedOverlay);
-
-        Minecraft minecraft = Minecraft.getInstance();
-        boolean isFirstPerson = !minecraft.gameRenderer.getMainCamera().isDetached();
-        boolean isInvisible = blockEntity.controllingPlayer == minecraft.player && isFirstPerson;
-
 
         poseStack.pushPose();
         {
+            // hang everything below off the fork tips, tilted along the aim, with +Z running back down the bands
+            poseStack.translate(0, ANCHOR_Y, 0);
+            poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            poseStack.translate(0, -ANCHOR_Y, 0);
 
-            poseStack.translate(-0.5, -2.0, 1.0);
-
-
-            poseStack.translate(0.5, birdPos.y(), lookVec.z());
-
-            float centerPoint = 2;
-            poseStack.translate(0, 0, centerPoint);
-
-            poseStack.mulPose(new Quaternionf().rotationXYZ(
-                    (float) Math.toRadians(opposite.y * 12),
-                    (float) Math.toRadians(opposite.x * 2),
-                    0
-            ));
-
-            poseStack.translate(0, 0, -centerPoint);
-
+            // the bands are modelled reaching from the fork tips to the resting pouch, so stretching them along Z
+            // from where they leave the fork keeps both ends attached however far the pouch has been dragged back
+            float stretch = (float) ((pouchDistance - BirdSlingshotBlockEntity.BAND_START) / BirdSlingshotBlockEntity.BAND_REST_LENGTH);
 
             poseStack.pushPose();
             {
-                poseStack.scale(2, 2, 2);
-                if (blockEntity.hasBirdItem() && !isInvisible) {
+                poseStack.translate(0, 0, BirdSlingshotBlockEntity.BAND_START * (1 - stretch));
+                poseStack.scale(1.0F, 1.0F, stretch);
+                renderBlockbenchModel(modelStretch, poseStack, vertexConsumer, packedLight, packedOverlay);
+            }
+            poseStack.popPose();
+
+            // the cradle rides the far end of the bands
+            poseStack.pushPose();
+            {
+                poseStack.translate(0, 0, pouchDistance - BirdSlingshotBlockEntity.POUCH_REST_DISTANCE);
+                renderBlockbenchModel(modelSupport, poseStack, vertexConsumer, packedLight, packedOverlay);
+            }
+            poseStack.popPose();
+
+            // the bird sits where the camera is, so drop it while its owner is looking through it
+            Minecraft minecraft = Minecraft.getInstance();
+            boolean isFirstPerson = !minecraft.gameRenderer.getMainCamera().isDetached();
+            boolean isInvisible = blockEntity.controllingPlayer == minecraft.player && isFirstPerson;
+
+            if (blockEntity.hasBirdItem() && !isInvisible) {
+                poseStack.pushPose();
+                {
+                    // the parts bring the anchor height along in their own offsets, an item has to be lifted to it
+                    poseStack.translate(0, ANCHOR_Y, pouchDistance - BIRD_INSET);
+                    Vec3 slingshotModelOffset = blockEntity.birdItem.getSlingshotModelOffset();
+                    poseStack.translate(slingshotModelOffset.x(), slingshotModelOffset.y(), slingshotModelOffset.z());
+                    poseStack.scale(2, 2, 2);
                     itemRenderer.renderStatic(blockEntity.birdItem.getDefaultInstance(),
                             ItemDisplayContext.GROUND,
                             packedLight,
@@ -116,26 +120,8 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
                             53
                     );
                 }
+                poseStack.popPose();
             }
-            poseStack.popPose();
-
-            poseStack.pushPose();
-            {
-                poseStack.translate(-0.0, -3.8, -3);
-                renderBlockbenchModel(modelSupport, poseStack, vertexConsumer, packedLight, packedOverlay);
-
-
-                double distance = (lookVec.z + Math.abs(lookVec.y)) / 2;
-                double scale = (distance / 2) + 0.1;
-
-                poseStack.translate(0.0, 0.0,   -scale * 4 + 2.75 );
-                poseStack.scale(1.0F, 1.0F, (float) (scale + 0.3));
-                renderBlockbenchModel(modelStretch, poseStack, vertexConsumer, packedLight, packedOverlay);
-
-            }
-            poseStack.popPose();
-
-
         }
         poseStack.popPose();
 
@@ -145,7 +131,9 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
 
     @Override
     public @NotNull AABB getRenderBoundingBox(BirdSlingshotBlockEntity blockEntity) {
-        return AABB.of(new BoundingBox(blockEntity.getBlockPos().above(3)).inflatedBy(3));
+        // the pouch can swing a long way behind the frame, so cover everything it can reach
+        double reach = BirdSlingshotBlockEntity.POUCH_REST_DISTANCE + BirdSlingshotBlockEntity.MAX_PULL;
+        return AABB.ofSize(blockEntity.getAnchorPosition(blockEntity.getBlockPos()), reach * 2, reach * 2, reach * 2);
     }
 
 

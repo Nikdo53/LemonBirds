@@ -26,7 +26,7 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
     }
 
     @Override
-    protected void activateAbility() {
+    protected void activateAbility(float xRot, float yRot) {
         birdExplosion(level(), this.position(), this);
         this.discard();
     }

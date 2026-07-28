@@ -67,8 +67,10 @@ public class ClientEvents {
             }
 
 
-            PacketDistributor.sendToServer(new ActivateLemonBirdPayload(entityId));
-            lemonBird.onAbilityKey();
+            float xRot = minecraft.getCameraEntity().getXRot();
+            float yRot = minecraft.getCameraEntity().getYRot();
+            PacketDistributor.sendToServer(new ActivateLemonBirdPayload(entityId, xRot, yRot));
+            lemonBird.onAbilityKey(xRot, yRot);
         }
 
         BlockPos pos = player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);

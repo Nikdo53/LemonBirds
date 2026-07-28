@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.network.ActivateLemonBirdPayload;
-import net.nikdo53.lemonbirds.network.SlingshotDummyPosPayload;
+import net.nikdo53.lemonbirds.network.SlingshotRotationPayload;
 import net.nikdo53.lemonbirds.network.SlingshotKeyPressPayload;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
 
@@ -51,9 +51,9 @@ public class ServerEvents {
         );
 
         registrar.playToServer(
-                SlingshotDummyPosPayload.TYPE,
-                SlingshotDummyPosPayload.STREAM_CODEC,
-                SlingshotDummyPosPayload::handle
+                SlingshotRotationPayload.TYPE,
+                SlingshotRotationPayload.STREAM_CODEC,
+                SlingshotRotationPayload::handle
         );
 
 

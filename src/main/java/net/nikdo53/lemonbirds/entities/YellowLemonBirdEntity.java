@@ -27,7 +27,7 @@ public class YellowLemonBirdEntity extends AbstractLemonBirdEntity{
     }
 
     @Override
-    protected void activateAbility() {
+    protected void activateAbility(float xRot, float yRot) {
         Player owner = (Player) getOwner();
         assert owner != null;
 
