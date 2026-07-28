@@ -130,14 +130,21 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
 
         if (key == ModKeyBinds.SLINGSHOT_LAUNCH.getKey().getValue() && birdItem != null){
-            AbstractLemonBirdEntity bird = birdItem.useFunction.apply(level, player);
-            bird.setOwner(player);
-            bird.setItem(birdItem.getDefaultInstance());
+            // The bird is server authoritative. Launching one client side too would only build a bird that
+            // ClientLevel silently drops on addFreshEntity - but not before Projectile#shoot has pointed the
+            // player's LEMON_BIRD attachment at its id, which then resolves to nothing and leaves the ability
+            // key with no bird to fire.
+            if (level != null && !level.isClientSide()) {
+                AbstractLemonBirdEntity bird = birdItem.useFunction.apply(level, player);
+                bird.setOwner(player);
+                bird.setItem(birdItem.getDefaultInstance());
+                bird.setControllingPlayer(player);
 
-            shoot(bird);
+                shoot(bird);
+            }
+
             endControl(player);
             birdItem = null;
-            bird.setControllingPlayer(player);
         }
     }
 

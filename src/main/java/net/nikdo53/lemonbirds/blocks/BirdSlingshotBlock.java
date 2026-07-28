@@ -80,7 +80,7 @@ public class BirdSlingshotBlock extends AbstractMultiBlock implements IPreviewab
         if (level.getBlockEntity(IMultiBlock.getCenter(level, pos)) instanceof BirdSlingshotBlockEntity blockEntity) {
 
 
-            if (player.isCrouching() && blockEntity.hasBirdItem() && !blockEntity.isBeingControlled() ) {
+            if (player.isShiftKeyDown() && blockEntity.hasBirdItem() && !blockEntity.isBeingControlled() ) {
                 ItemStack birdStack = new ItemStack(blockEntity.birdItem);
                 if (!player.getInventory().add(birdStack)) {
                     player.drop(birdStack, false);

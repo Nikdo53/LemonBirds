@@ -28,7 +28,7 @@ public class BlueLemonBirdEntity extends AbstractLemonBirdEntity{
     protected void activateAbility(float xRot, float yRot) {
         for (float yRotAdd : new float[] {15.0f, -15.0f}){
                 AbstractLemonBirdEntity projectile = ModItems.BLUE_BIRD.get().asProjectile(level(), getPosition(1), this.getMotionDirection());
-                projectile.shootFromRotation(this, this.getOwner().getXRot(), this.getOwner().getYRot() + yRotAdd, 0.0f, 1.5f, 1.0f);
+                projectile.shootFromRotation(this, xRot, yRot + yRotAdd, 0.0f, 1.5f, 1.0f);
                 level().addFreshEntity(projectile);
         }
 

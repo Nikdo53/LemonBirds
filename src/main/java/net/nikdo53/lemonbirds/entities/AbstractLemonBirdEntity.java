@@ -74,7 +74,9 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
         super.shoot(x, y, z, velocity, inaccuracy);
         Entity owner = getOwner();
-        if (owner instanceof Player player) {
+        // LEMON_BIRD is a synced attachment, so writing it client side would only overwrite the server's id with
+        // one the client made up.
+        if (owner instanceof Player player && !level().isClientSide()) {
             player.setData(ModDataAttachments.LEMON_BIRD, getId());
         }
     }
@@ -130,10 +132,11 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             level().addParticle(ModParticles.LEMON_BIRD_TRAIL.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
         }
 
-        if (getOwner() instanceof Player player) {
-            setRot(player.getYRot(), player.getXRot());
-            this.yRotO = player.getYRot();
-            this.xRotO = player.getXRot();
+        Entity aimSource = getAimSource();
+        if (aimSource != null) {
+            setRot(aimSource.getYRot(), aimSource.getXRot());
+            this.yRotO = aimSource.getYRot();
+            this.xRotO = aimSource.getXRot();
         }
 
         if (level().isClientSide() && getControllingPlayer().isPresent()) {
@@ -232,13 +235,13 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
     @Override
     public void remove(RemovalReason reason) {
-        if (getOwner() instanceof Player player) {
+        if (getOwner() instanceof Player player && !level().isClientSide()) {
             if (player.getData(ModDataAttachments.LEMON_BIRD) == this.getId()) {
                 player.removeData(ModDataAttachments.LEMON_BIRD);
             }
         }
 
-        if (getControllingPlayer().isPresent()){
+        if (level().isClientSide() && getControllingPlayer().isPresent()){
             BirdSlingshotBlockEntity.ClientThingy.resetCamera(getControllingPlayer().get());
         }
         turnIntoBlock();
@@ -246,18 +249,33 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         super.remove(reason);
     }
 
+    /**
+     * Whoever is aiming this bird. Normally the owner, but Projectile#findOwner gives up on a client level, so a bird
+     * launched from a slingshot has no owner client side until the first tick sets one - fall back to the controlling
+     * player so the camera and the ability aim are never left following the bird's own stale rotation.
+     */
+    public @Nullable Entity getAimSource() {
+        Entity owner = getOwner();
+        if (owner != null) {
+            return owner;
+        }
+        return getControllingPlayer().map(uuid -> (Entity) level().getPlayerByUUID(uuid)).orElse(null);
+    }
+
     @Override
     public float getViewXRot(float partialTicks) {
-        if (getOwner() != null){
-            return getOwner().getViewXRot(partialTicks);
+        Entity aimSource = getAimSource();
+        if (aimSource != null){
+            return aimSource.getViewXRot(partialTicks);
         }
         return super.getViewXRot(partialTicks);
     }
 
     @Override
     public float getViewYRot(float partialTick) {
-        if (getOwner() != null){
-            return getOwner().getViewYRot(partialTick);
+        Entity aimSource = getAimSource();
+        if (aimSource != null){
+            return aimSource.getViewYRot(partialTick);
         }
         return super.getViewYRot(partialTick);
     }

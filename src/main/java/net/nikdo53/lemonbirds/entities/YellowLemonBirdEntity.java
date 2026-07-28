@@ -28,12 +28,8 @@ public class YellowLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected void activateAbility(float xRot, float yRot) {
-        Player owner = (Player) getOwner();
-        assert owner != null;
-
         Vec3 deltaMovement = getDeltaMovement();
-        this.setDeltaMovement(deltaMovement.add(owner.getLookAngle().scale(1.0)));
-
+        this.setDeltaMovement(deltaMovement.add(calculateViewVector(xRot, yRot).scale(1.0)));
     }
 
     public YellowLemonBirdEntity(Level level, Player player) {
