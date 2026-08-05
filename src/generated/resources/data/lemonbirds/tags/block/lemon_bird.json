@@ -1,0 +1,12 @@
+{
+  "values": [
+    "lemonbirds:falling_lemon_bird_block",
+    "lemonbirds:red_bird_block",
+    "lemonbirds:yellow_bird_block",
+    "lemonbirds:blue_bird_block",
+    "lemonbirds:bomb_bird_block",
+    "lemonbirds:matilda_bird_block",
+    "lemonbirds:terence_bird_block",
+    "lemonbirds:bird_sling_shot"
+  ]
+}

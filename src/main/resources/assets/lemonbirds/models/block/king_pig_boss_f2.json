@@ -1,0 +1,14 @@
+{
+	"render_type": "cutout_mipped",
+
+	"parent": "block/block",
+	"gui_light": "front",
+	"loader": "neoforge:obj",
+	"flip_v": true,
+	"model": "lemonbirds:models/block/king_pig_boss_f2.obj",
+	"textures": {
+		"texture0": "lemonbirds:block/king_pig_boss_f2",
+		"particle": "lemonbirds:block/king_pig_boss_f2"
+
+	}
+}

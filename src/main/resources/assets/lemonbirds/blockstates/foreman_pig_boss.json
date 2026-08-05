@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "damage=0,facing=north": {
+      "model": "lemonbirds:block/foreman_pig_boss"
+    },
+    "damage=0,facing=east": {
+      "model": "lemonbirds:block/foreman_pig_boss",
+      "y": 90
+    },
+    "damage=0,facing=south": {
+      "model": "lemonbirds:block/foreman_pig_boss",
+      "y": 180
+    },
+    "damage=0,facing=west": {
+      "model": "lemonbirds:block/foreman_pig_boss",
+      "y": 270
+    },
+    "damage=1,facing=north": {
+      "model": "lemonbirds:block/foreman_pig_boss_f1"
+    },
+    "damage=1,facing=east": {
+      "model": "lemonbirds:block/foreman_pig_boss_f1",
+      "y": 90
+    },
+    "damage=1,facing=south": {
+      "model": "lemonbirds:block/foreman_pig_boss_f1",
+      "y": 180
+    },
+    "damage=1,facing=west": {
+      "model": "lemonbirds:block/foreman_pig_boss_f1",
+      "y": 270
+    },
+    "damage=2,facing=north": {
+      "model": "lemonbirds:block/foreman_pig_boss_f2"
+    },
+    "damage=2,facing=east": {
+      "model": "lemonbirds:block/foreman_pig_boss_f2",
+      "y": 90
+    },
+    "damage=2,facing=south": {
+      "model": "lemonbirds:block/foreman_pig_boss_f2",
+      "y": 180
+    },
+    "damage=2,facing=west": {
+      "model": "lemonbirds:block/foreman_pig_boss_f2",
+      "y": 270
+    }
+  }
+}

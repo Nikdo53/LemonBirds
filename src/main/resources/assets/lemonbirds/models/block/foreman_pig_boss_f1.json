@@ -1,0 +1,14 @@
+{
+	"render_type": "cutout_mipped",
+
+	"parent": "block/block",
+	"gui_light": "front",
+	"loader": "neoforge:obj",
+	"flip_v": true,
+	"model": "lemonbirds:models/block/foreman_pig_boss_f1.obj",
+	"textures": {
+		"texture0": "lemonbirds:block/foreman_pig_boss_f1",
+		"particle": "lemonbirds:block/foreman_pig_boss_f1"
+
+	}
+}

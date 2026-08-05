@@ -8,8 +8,10 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nikdo53.lemonbirds.LemonBirds;
+import net.nikdo53.lemonbirds.blocks.BadPigBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
+import net.nikdo53.lemonbirds.items.SublevelBlockItem;
 
 import java.util.function.Supplier;
 
@@ -27,16 +29,23 @@ public interface ModBlocks {
 
     DeferredBlock<Block> SLING_SHOT = registerWithItem("bird_sling_shot", () -> new BirdSlingshotBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
+    DeferredBlock<Block> BAD_PIG = registerSableItem("bad_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> CORPORAL_PIG = registerSableItem("corporal_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> FOREMAN_PIG_BOSS = registerSableItem("foreman_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> CHEF_PIG_BOSS = registerSableItem("chef_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> KING_PIG_BOSS = registerSableItem("king_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
+
 
     static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> block){
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);
-        registerBlockItem(name, toReturn);
+        ModItems.ITEMS.register(name, () -> new BlockItem(toReturn.get(), new Item.Properties()));
         return toReturn;
     }
 
-    private static <T extends Block> DeferredItem<Item> registerBlockItem(String name, DeferredBlock<T> block) {
-        return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(),
-                new Item.Properties()));
+    static <T extends Block> DeferredBlock<T> registerSableItem(String name, Supplier<T> block){
+        DeferredBlock<T> toReturn = BLOCKS.register(name, block);
+        ModItems.ITEMS.register(name, () -> new SublevelBlockItem(toReturn.get(), new Item.Properties()));
+        return toReturn;
     }
 
 

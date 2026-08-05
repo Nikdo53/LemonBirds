@@ -12,8 +12,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.init.ModBlockTags;
+import net.nikdo53.lemonbirds.init.ModBlocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -28,6 +30,12 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             Sable.sablePath("fragile")
     );
 
+    public static final TagKey<Block> BOUNCY = TagKey.create(
+            Registries.BLOCK,
+            Sable.sablePath("bouncy")
+    );
+
+
     @Override
     @SuppressWarnings("unchecked")
     protected void addTags(HolderLookup.Provider provider) {
@@ -38,5 +46,10 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
        tag(ModBlockTags.LEMON_BIRDS_GLASS).addTags(Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.GLASS_PANES);
        tag(ModBlockTags.LEMON_BIRDS_HAY).addTag(BlockTags.WOOL).add(Blocks.HAY_BLOCK).addTag(BlockTags.LEAVES);
 
+        for (DeferredHolder<Block, ? extends Block> entry : ModBlocks.BLOCKS.getEntries()) {
+            tag(ModBlockTags.LEMON_BIRD).add(entry.get());
+        }
+
+        tag(BOUNCY).addTags(ModBlockTags.LEMON_BIRD);
     }
 }

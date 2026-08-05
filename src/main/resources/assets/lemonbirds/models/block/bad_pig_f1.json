@@ -1,0 +1,9 @@
+{
+	"parent": "lemonbirds:block/bad_pig",
+	"render_type": "cutout_mipped",
+
+	"textures": {
+		"2": "lemonbirds:block/bad_pig_f1",
+		"particle": "lemonbirds:block/bad_pig_f1"
+	}
+}

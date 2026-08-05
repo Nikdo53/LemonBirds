@@ -11,14 +11,4 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ServerSubLevel.class)
 public class ServerSubLevelMixin {
 
-    @Expression("? < ?")
-    @WrapOperation(method = "tick", at = @At("MIXINEXTRAS:EXPRESSION"))
-    private static boolean onTick(double left, double right, Operation<Boolean> original){
-        Boolean call = original.call(left, right);
-        if (call) {
-            System.out.println("left = " + left);
-            System.out.println("right = " + right);
-        }
-        return call;
-    }
 }

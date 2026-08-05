@@ -9,6 +9,7 @@ import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -31,6 +32,8 @@ import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 import net.nikdo53.lemonbirds.init.*;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
+import net.nikdo53.lemonbirds.util.LemonUtils;
+import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 
@@ -183,53 +186,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         } else {
             if (level instanceof ServerLevel serverLevel) {
                 ServerSubLevel subLevel = (ServerSubLevel) SableCompanion.INSTANCE.getContaining(level, pos);
-                applyPhysics(serverLevel, subLevel, normal, speed * 12);
+                LemonUtils.applyPhysics(serverLevel, subLevel, normal, speed * 12);
             }
 
             discard();
-        }
-    }
-
-    private static @Nullable ServerSubLevel createOrGetSubLevel(ServerLevel level, BlockPos pos) {
-        ServerSubLevel subLevel = (ServerSubLevel) SableCompanion.INSTANCE.getContaining(level, pos);
-
-        if (subLevel == null) {
-
-
-            int size = 2;
-            final BoundingBox boundingBox = BoundingBox.fromCorners(pos.offset(size, size, size), pos.offset(-size, -size, -size));
-
-            final List<BlockPos> blocks = BlockPos.betweenClosedStream(boundingBox).map(BlockPos::immutable).toList();
-            final BlockPos anchor = blocks.getFirst();
-
-            final BoundingBox3i bounds = new BoundingBox3i(boundingBox);
-            bounds.set(
-                    bounds.minX - 1,
-                    bounds.minY - 1,
-                    bounds.minZ - 1,
-                    bounds.maxX + 1,
-                    bounds.maxY + 1,
-                    bounds.maxZ + 1
-            );
-
-            subLevel = SubLevelAssemblyHelper.assembleBlocks(level, anchor, blocks, bounds);
-
-        }
-
-        return subLevel;
-    }
-
-    private static void applyPhysics(ServerLevel level, ServerSubLevel subLevel, Vec3 normal, double scale) {
-        SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(level);
-
-        if (system != null && subLevel != null) {
-            Vec3 movement = normal.scale(scale);
-           // movement = subLevel.logicalPose().transformNormalInverse(movement);
-
-            RigidBodyHandle handle = RigidBodyHandle.of(subLevel);
-            if (handle.isValid()) {
-                handle.applyLinearImpulse(JOMLConversion.toJOML(movement));
-            }
         }
     }
 
@@ -244,7 +204,11 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         if (level().isClientSide() && getControllingPlayer().isPresent()){
             BirdSlingshotBlockEntity.ClientThingy.resetCamera(getControllingPlayer().get());
         }
-        turnIntoBlock();
+        // Only leave a block behind when the bird is actually gone for good, not when it's unloaded or moved between
+        // dimensions - otherwise a chunk unload duplicates the block.
+        if (reason.shouldDestroy()) {
+            turnIntoBlock();
+        }
 
         super.remove(reason);
     }
@@ -281,75 +245,34 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     }
 
     public void turnIntoBlock(){
+        // Placing the block is server side only - the client gets it from the block update - and a sub-level can only
+        // ever be assembled on a ServerLevel.
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+
         Item item = getItem().getItem();
-        if (item instanceof BirdItem birdItem) {
-            Optional<Block> block = birdItem.getBlock();
-            if (block.isEmpty() || !(block.get() instanceof FallingBirdBlock multiBlock)) return;
+        if (!(item instanceof BirdItem birdItem)) return;
 
-            BlockState state = multiBlock.defaultBlockState();
-            state = state.setValue(FallingBirdBlock.DESPAWNS, true);
-
-            BlockPos pos = getOnPos();
-            List<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(level(), null, pos, state);
-
-            level().setBlock(pos, state, 3);
-            level().blockEntityChanged(pos);
-
-            Vec2 rotationVector = this.getRotationVector();
-            Vec3 deltaMovement = getDeltaMovement().scale(-1);
-
-            if (level() instanceof ServerLevel) {
-                LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(2, (serverLevel) -> {
-                    final BoundingBox3i bounds = BoundingBox3i.from(shape);
-                    if (bounds == null){
-                        LemonBirds.LOGGER.error("Failed to create bounding box for falling bird block at {}", pos);
-                        return;
-                    }
-
-                    bounds.set(
-                            bounds.minX - 1,
-                            bounds.minY - 1,
-                            bounds.minZ - 1,
-                            bounds.maxX + 1,
-                            bounds.maxY + 1,
-                            bounds.maxZ + 1
-                    );
+        Optional<Block> block = birdItem.getBlock();
+        if (block.isEmpty() || !(block.get() instanceof FallingBirdBlock multiBlock)) return;
 
 
-                    ServerSubLevel subLevel;
-                    try {
-                        subLevel = SubLevelAssemblyHelper.assembleBlocks(serverLevel, pos, shape, bounds);
-                        subLevel.setName(item.builtInRegistryHolder().getRegisteredName());
-                    } catch (ArrayIndexOutOfBoundsException e){
-                        LemonBirds.LOGGER.error("Unable to create sub-level cuz sable sucks");
-                        return;
-                    }
+        BlockState state = multiBlock.defaultBlockState()
+                .setValue(FallingBirdBlock.DESPAWNS, true)
+                .setValue(AbstractMultiBlock.CENTER, true)
+                .setValue(FallingBirdBlock.FACING, Direction.SOUTH);
 
-                    if (subLevel != null) {
-                        SubLevelPhysicsSystem system = SubLevelPhysicsSystem.get(serverLevel);
-                        Pose3d pose = subLevel.logicalPose();
+        BlockPos pos = blockPosition();
+        List<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(serverLevel, null, pos, state);
 
-                        Quaterniond orientation = new Quaterniond();
+        serverLevel.setBlock(pos, state, 3);
 
-                        orientation.rotateY(-Math.toRadians(rotationVector.y));
-                        orientation.rotateX(Math.toRadians(rotationVector.x));
+        Vec2 rotationVector = this.getRotationVector();
+        Vec3 bounce = getDeltaMovement().scale(-1);
 
-                        pose.orientation().set(orientation);
-                        system.getPipeline().teleport(subLevel, pose.position(), pose.orientation());
-
-                    }
-
-                    LateTickOperation.SUB_LEVEL_OPERATIONS.add(new LateTickOperation(5, (lvl) -> {
-                        if (subLevel != null) {
-                            applyPhysics(lvl, subLevel, deltaMovement, 10);
-                        }
-                    }));
-
-                }));
-
-            }
-
-        }
+        // The multiblock isn't finished placing itself until the block entities have been through a tick, so give it one
+        // before handing the blocks to sable.
+        LateTickOperation.schedule(serverLevel, 1, (level) ->
+                LemonUtils.assembleIntoSubLevel(level, multiBlock, pos, shape, item.builtInRegistryHolder().getRegisteredName(), rotationVector, bounce));
     }
 
     public record DestroyEffectivity(double wood, double stone, double glass, double hay, boolean canDestroy) {

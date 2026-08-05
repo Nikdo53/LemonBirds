@@ -22,17 +22,7 @@ public class ServerEvents {
 
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        for (int i = 0; i < LateTickOperation.SUB_LEVEL_OPERATIONS.size(); i++) {
-            LateTickOperation lateTickOperation = LateTickOperation.SUB_LEVEL_OPERATIONS.get(i);
-            if (lateTickOperation.tick <= 0) {
-                lateTickOperation.operation.accept(serverLevel);
-                LateTickOperation.SUB_LEVEL_OPERATIONS.remove(i);
-                i--;
-            } else {
-                lateTickOperation.tick--;
-            }
-        }
-        ;
+        LateTickOperation.run(serverLevel);
     }
 
     @SubscribeEvent

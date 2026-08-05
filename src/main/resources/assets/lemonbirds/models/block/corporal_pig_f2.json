@@ -1,0 +1,7 @@
+{
+	"parent": "lemonbirds:block/corporal_pig",
+	"textures": {
+		"2": "lemonbirds:block/corporal_pig_f2",
+		"particle": "lemonbirds:block/corporal_pig_f2"
+	}
+}
