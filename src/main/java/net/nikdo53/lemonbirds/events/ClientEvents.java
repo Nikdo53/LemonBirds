@@ -43,10 +43,10 @@ public class ClientEvents {
 
 
         BlockPos pos = player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);
+        BirdSlingshotBlockEntity.Action action = BirdSlingshotBlockEntity.ClientThingy.actionFromKey(key);
         if (pos != null) {
             if (level.getBlockEntity(pos) instanceof BirdSlingshotBlockEntity blockEntity) {
                 if (blockEntity.controllingPlayer != player) return;
-                BirdSlingshotBlockEntity.Action action = BirdSlingshotBlockEntity.ClientThingy.actionFromKey(key);
                 if (action != null) {
                     blockEntity.onKeyPressed(player, action);
                     PacketDistributor.sendToServer(new SlingshotKeyPressPayload(action));
@@ -56,7 +56,11 @@ public class ClientEvents {
                 player.removeData(ModDataAttachments.SLINGSHOT);
             }
 
+        }
 
+        if (action == BirdSlingshotBlockEntity.Action.END_CONTROL) {
+            minecraft.setCameraEntity(player);
+            player.removeData(ModDataAttachments.SLINGSHOT);
         }
     }
 

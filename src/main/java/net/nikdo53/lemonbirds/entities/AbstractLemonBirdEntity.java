@@ -1,13 +1,7 @@
 package net.nikdo53.lemonbirds.entities;
 
-import dev.ryanhcode.sable.api.SubLevelAssemblyHelper;
-import dev.ryanhcode.sable.api.physics.handle.RigidBodyHandle;
 import dev.ryanhcode.sable.companion.SableCompanion;
-import dev.ryanhcode.sable.companion.math.BoundingBox3i;
-import dev.ryanhcode.sable.companion.math.JOMLConversion;
-import dev.ryanhcode.sable.companion.math.Pose3d;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
-import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
@@ -15,7 +9,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -24,9 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.*;
-import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.BadPigBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
@@ -36,7 +27,6 @@ import net.nikdo53.lemonbirds.util.LateTickOperation;
 import net.nikdo53.lemonbirds.util.LemonUtils;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaterniond;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +37,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             AbstractLemonBirdEntity.class, EntityDataSerializers.BOOLEAN
     );
 
-    private static final EntityDataAccessor<Integer> HIT_COOLDOWN = SynchedEntityData.defineId(
+    private static final EntityDataAccessor<Integer> ABILITY_COOLDOWN = SynchedEntityData.defineId(
             AbstractLemonBirdEntity.class, EntityDataSerializers.INT
     );
 
@@ -86,7 +76,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     }
 
     public void onAbilityKey(float xRot, float yRot){
-        if (hasAbility()) {
+        if (hasAbility() && entityData.get(ABILITY_COOLDOWN) <= 0) {
             entityData.set(DATA_HAS_ABILITY, false);
             activateAbility(xRot, yRot);
         }
@@ -120,7 +110,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_HAS_ABILITY, true);
-        builder.define(HIT_COOLDOWN, 0);
+        builder.define(ABILITY_COOLDOWN, 5);
         builder.define(CONTROLLING_PLAYER_ID, Optional.empty());
     }
 
@@ -128,8 +118,8 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     @Override
     public void tick() {
         super.tick();
-        if (entityData.get(HIT_COOLDOWN) > 0) {
-            entityData.set(HIT_COOLDOWN, entityData.get(HIT_COOLDOWN) - 1);
+        if (entityData.get(ABILITY_COOLDOWN) > 0) {
+            entityData.set(ABILITY_COOLDOWN, entityData.get(ABILITY_COOLDOWN) - 1);
         }
 
         if (level().isClientSide()){
@@ -160,7 +150,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        if (entityData.get(HIT_COOLDOWN) > 0) {
+        if (entityData.get(ABILITY_COOLDOWN) > 0) {
             return;
         }
         super.onHitBlock(result);
@@ -188,7 +178,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             BlockPos.betweenClosedStream(AABB.ofSize(location, size, size, size))
                     .forEach(blockPos -> level.destroyBlock(blockPos, false));
 
-            entityData.set(HIT_COOLDOWN, 1);
+            entityData.set(ABILITY_COOLDOWN, 1);
 
         } else {
             if (level instanceof ServerLevel serverLevel) {

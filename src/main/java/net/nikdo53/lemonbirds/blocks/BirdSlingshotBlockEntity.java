@@ -16,6 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -152,6 +153,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
             endControl(player);
             birdItem = null;
         }
+
+        sync();
     }
 
     public enum Action implements StringRepresentableAutoForEnums {
@@ -172,6 +175,14 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         this.pull = Mth.clamp(pull, 0, MAX_PULL);
 
         moveDummyToPouch();
+        sync();
+    }
+
+    public void sync(){
+        this.setChanged();
+        if (level instanceof ServerLevel serverLevel){
+            serverLevel.getChunkSource().blockChanged(this.getBlockPos());
+        }
     }
 
     /** Keeps the camera sat in the pouch, so that what the player sees lines up with what the renderer draws. */
@@ -254,13 +265,26 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         projectile.shoot(direction.x(), direction.y(), direction.z(), velocity * 2, 0.1f);
         projectile.moveTo(getPouchPosition(1));
         getLevel().addFreshEntity(projectile);
+
+        setChanged();
     }
 
+    @Override
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        yawOld = this.yaw;
+        pitchOld = this.pitch;
+        pullOld = this.pull;
+
+        super.handleUpdateTag(tag, lookupProvider);
+    }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         if (birdItem != null) tag.putString("birdItem", BuiltInRegistries.ITEM.getKey(birdItem).toString());
+        tag.putFloat("yaw", yaw);
+        tag.putFloat("pitch", pitch);
+        tag.putFloat("pull", pull);
     }
 
     @Override
@@ -270,6 +294,10 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         if (!string.isBlank()){
             birdItem = (BirdItem) BuiltInRegistries.ITEM.get(ResourceLocation.parse(string));
         }
+
+        yaw = tag.getFloat("yaw");
+        pitch = tag.getFloat("pitch");
+        pull = tag.getFloat("pull");
     }
 
     public static class ClientThingy{

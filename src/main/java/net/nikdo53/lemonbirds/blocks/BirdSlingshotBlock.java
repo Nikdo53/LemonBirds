@@ -86,11 +86,13 @@ public class BirdSlingshotBlock extends AbstractMultiBlock implements IPreviewab
                     player.drop(birdStack, false);
                 }
                 blockEntity.birdItem = null;
+                blockEntity.sync();
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
 
             if (!blockEntity.isBeingControlled() && blockEntity.hasBirdItem()) {
                 blockEntity.beginControl(player);
+                blockEntity.sync();
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }
@@ -102,6 +104,7 @@ public class BirdSlingshotBlock extends AbstractMultiBlock implements IPreviewab
         if (level.getBlockEntity(IMultiBlock.getCenter(level, pos)) instanceof BirdSlingshotBlockEntity blockEntity && stack.getItem() instanceof BirdItem birdItem) {
             if (!blockEntity.hasBirdItem()) {
                 blockEntity.birdItem = birdItem;
+                blockEntity.sync();
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
 
             } else if (birdItem != blockEntity.birdItem) {
@@ -111,6 +114,7 @@ public class BirdSlingshotBlock extends AbstractMultiBlock implements IPreviewab
                 }
 
                 blockEntity.birdItem = birdItem;
+                blockEntity.sync();
                 return ItemInteractionResult.sidedSuccess(level.isClientSide);
             }
         }
