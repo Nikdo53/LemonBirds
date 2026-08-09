@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW;
 public interface ModKeyBinds {
     KeyMapping SLINGSHOT_LAUNCH = new KeyMapping("key.lemonbirds.slingshot_launch", InputConstants.KEY_H, "key.category.lemonbirds.lemonbirds");
     KeyMapping BIRD_ABILITY = new KeyMapping("key.lemonbirds.bird_ability", GLFW.GLFW_KEY_K, "key.category.lemonbirds.lemonbirds");
+    KeyMapping END_CAMERA_CONTROL = new KeyMapping("key.lemonbirds.end_camera_control", InputConstants.KEY_E, "key.category.lemonbirds.lemonbirds");
 
 
 }

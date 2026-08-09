@@ -3,7 +3,6 @@
   "package": "net.nikdo53.lemonbirds.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ServerSubLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

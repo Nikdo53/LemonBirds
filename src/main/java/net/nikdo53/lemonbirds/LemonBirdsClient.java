@@ -63,6 +63,8 @@ public class LemonBirdsClient {
     {
         event.register(ModKeyBinds.BIRD_ABILITY);
         event.register(ModKeyBinds.SLINGSHOT_LAUNCH);
+        event.register(ModKeyBinds.END_CAMERA_CONTROL);
+
     }
 
 

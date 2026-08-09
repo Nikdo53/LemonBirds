@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.*;
 import net.nikdo53.lemonbirds.LemonBirds;
+import net.nikdo53.lemonbirds.blocks.BadPigBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 import net.nikdo53.lemonbirds.init.*;
@@ -177,6 +178,12 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         double speed = 10.0 * movement.lengthSqr();
         double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed());
 
+        if (level.getBlockState(pos).getBlock() instanceof BadPigBlock pigBlock && level instanceof ServerLevel serverLevel){
+            pigBlock.sable$getCallback().onHitWithVelocity(serverLevel, pos, level.getBlockState(pos), getDeltaMovement().lengthSqr() * 5);
+        }
+
+        this.setDeltaMovement(movement);
+
         if (speed > 5 && getDestroyEffectivity().canDestroy) {
             BlockPos.betweenClosedStream(AABB.ofSize(location, size, size, size))
                     .forEach(blockPos -> level.destroyBlock(blockPos, false));
@@ -294,9 +301,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         }
 
         public Vec3 applyMovementPostHit(Entity entity, BlockState state){
-            Vec3 scaled = entity.getDeltaMovement().scale(getForBlock(state));
-            entity.setDeltaMovement(scaled);
-            return scaled;
+            return entity.getDeltaMovement().scale(getForBlock(state));
         }
     }
 }

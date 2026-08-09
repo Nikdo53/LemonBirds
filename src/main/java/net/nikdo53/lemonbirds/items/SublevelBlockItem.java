@@ -32,7 +32,7 @@ public class SublevelBlockItem extends BlockItem {
 
                 List<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(context.getLevel(), null, pos, state);
 
-                LateTickOperation.schedule(serverLevel, 1, (level) ->
+                LateTickOperation.schedule(serverLevel, 2, (level) ->
                         LemonUtils.assembleIntoSubLevel(level, getBlock(), pos, shape, this.builtInRegistryHolder().getRegisteredName(), null, null));
             }
 

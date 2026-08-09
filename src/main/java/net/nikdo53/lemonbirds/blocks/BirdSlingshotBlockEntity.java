@@ -1,6 +1,7 @@
 package net.nikdo53.lemonbirds.blocks;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,9 +11,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -30,11 +34,13 @@ import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.init.ModKeyBinds;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.network.SlingshotRotationPayload;
+import net.nikdo53.lemonbirds.util.StringRepresentableAutoForEnums;
 import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.function.IntFunction;
 
 public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     // Measurements taken from BirdSlingshotModel, so that the block entity and the renderer agree on where the sling is.
@@ -124,16 +130,16 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         pull = pullOld = 0;
     }
 
-    public void onKeyPressed(Player player, int key){
-        if (key == InputConstants.KEY_E || key == InputConstants.KEY_ESCAPE){
+    public void onKeyPressed(Player player, Action action){
+        if (action == Action.END_CONTROL){
             endControl(player);
         }
 
-        if (key == ModKeyBinds.SLINGSHOT_LAUNCH.getKey().getValue() && birdItem != null){
+        if (action == Action.LAUNCH_BIRD && birdItem != null){
             // The bird is server authoritative. Launching one client side too would only build a bird that
             // ClientLevel silently drops on addFreshEntity - but not before Projectile#shoot has pointed the
             // player's LEMON_BIRD attachment at its id, which then resolves to nothing and leaves the ability
-            // key with no bird to fire.
+            // action with no bird to fire.
             if (level != null && !level.isClientSide()) {
                 AbstractLemonBirdEntity bird = birdItem.useFunction.apply(level, player);
                 bird.setOwner(player);
@@ -146,6 +152,14 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
             endControl(player);
             birdItem = null;
         }
+    }
+
+    public enum Action implements StringRepresentableAutoForEnums {
+        END_CONTROL,
+        LAUNCH_BIRD;
+
+        public static final IntFunction<Action> BY_ID = ByIdMap.continuous(Action::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+        public static final StreamCodec<ByteBuf, Action> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Action::ordinal);
     }
 
     public void updateRotation(float yaw, float pitch, float pull){
@@ -259,6 +273,15 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     }
 
     public static class ClientThingy{
+        public static Action actionFromKey(int key){
+            if (key == ModKeyBinds.END_CAMERA_CONTROL.getKey().getValue() || key == InputConstants.KEY_ESCAPE){
+                return Action.END_CONTROL;
+            } else if (key == ModKeyBinds.SLINGSHOT_LAUNCH.getKey().getValue()){
+                return Action.LAUNCH_BIRD;
+            } else {
+                return null;
+            }
+        }
         public static void trySetCamera(AbstractLemonBirdEntity entity, UUID uuid){
             Minecraft minecraft = Minecraft.getInstance();
             if (!minecraft.player.getUUID().equals(uuid)) return;

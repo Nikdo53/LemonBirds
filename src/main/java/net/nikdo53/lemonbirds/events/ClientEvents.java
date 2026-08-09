@@ -38,16 +38,19 @@ public class ClientEvents {
         ClientLevel level = minecraft.level;
 
         if (player == null || level == null) return;
-        onBirdKey(event.getKey());
+        int key = event.getKey();
+        onBirdKey(key);
 
 
         BlockPos pos = player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);
         if (pos != null) {
             if (level.getBlockEntity(pos) instanceof BirdSlingshotBlockEntity blockEntity) {
                 if (blockEntity.controllingPlayer != player) return;
-
-                blockEntity.onKeyPressed(player, event.getKey());
-                PacketDistributor.sendToServer(new SlingshotKeyPressPayload(event.getKey()));
+                BirdSlingshotBlockEntity.Action action = BirdSlingshotBlockEntity.ClientThingy.actionFromKey(key);
+                if (action != null) {
+                    blockEntity.onKeyPressed(player, action);
+                    PacketDistributor.sendToServer(new SlingshotKeyPressPayload(action));
+                }
             } else {
                 minecraft.setCameraEntity(player);
                 player.removeData(ModDataAttachments.SLINGSHOT);
@@ -71,20 +74,22 @@ public class ClientEvents {
         Vec3 position = lemonBird.position();
 
         if (key == ModKeyBinds.BIRD_ABILITY.getKey().getValue()) {
-            int gridSize = 2;
-            for (int x = -gridSize; x < gridSize; x++) {
-                for (int y = -gridSize; y < gridSize; y++) {
-                    for (int z = -gridSize; z < gridSize; z++) {
+            if (lemonBird.hasAbility()) {
+                int gridSize = 2;
+                for (int x = -gridSize; x < gridSize; x++) {
+                    for (int y = -gridSize; y < gridSize; y++) {
+                        for (int z = -gridSize; z < gridSize; z++) {
 
-                        level.addParticle(new DustParticleOptions(new Vector3f(1, 1, 1), 1),
-                                position.x() + (x / 2f),
-                                position.y() + (y / 2f),
-                                position.z() + (z / 2f),
-                                0, 0, 0);
+                            level.addParticle(new DustParticleOptions(new Vector3f(1, 1, 1), 1),
+                                    position.x() + (x / 2f),
+                                    position.y() + (y / 2f),
+                                    position.z() + (z / 2f),
+                                    0, 0, 0);
+                        }
                     }
                 }
-            }
 
+            }
 
             Vec2 rotation = getCameraRotation(minecraft);
             PacketDistributor.sendToServer(new ActivateLemonBirdPayload(entityId, rotation.x, rotation.y));

@@ -1,9 +1,13 @@
 package net.nikdo53.lemonbirds.init;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -29,11 +33,11 @@ public interface ModBlocks {
 
     DeferredBlock<Block> SLING_SHOT = registerWithItem("bird_sling_shot", () -> new BirdSlingshotBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
-    DeferredBlock<Block> BAD_PIG = registerSableItem("bad_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> CORPORAL_PIG = registerSableItem("corporal_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> FOREMAN_PIG_BOSS = registerSableItem("foreman_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> CHEF_PIG_BOSS = registerSableItem("chef_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> KING_PIG_BOSS = registerSableItem("king_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> BAD_PIG = registerSableItem("bad_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.ONE_BLOCK));
+    DeferredBlock<Block> CORPORAL_PIG = registerSableItem("corporal_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.ONE_BLOCK));
+    DeferredBlock<Block> FOREMAN_PIG_BOSS = registerSableItem("foreman_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.FOREMAN_SHAPE));
+    DeferredBlock<Block> CHEF_PIG_BOSS = registerSableItem("chef_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.CHEF_SHAPE));
+    DeferredBlock<Block> KING_PIG_BOSS = registerSableItem("king_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.KING_SHAPE));
 
 
     static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> block){
@@ -47,6 +51,11 @@ public interface ModBlocks {
         ModItems.ITEMS.register(name, () -> new SublevelBlockItem(toReturn.get(), new Item.Properties()));
         return toReturn;
     }
+
+    private static boolean always(BlockState state, BlockGetter blockGetter, BlockPos pos) {
+        return true;
+    }
+
 
 
 }
