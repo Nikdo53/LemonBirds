@@ -29,6 +29,7 @@ import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
 
 public class FallingBirdBlockEntity extends AbstractMultiBlockEntity {
     public int tickCount = 0;
@@ -59,9 +60,9 @@ public class FallingBirdBlockEntity extends AbstractMultiBlockEntity {
 
                 // Not getFullBlockShapeCache() - inside a sub-level plot nothing ever triggers the neighbour updates
                 // that fill the cache, so it can still be empty here and the blocks would never despawn.
-                List<BlockPos> shape = state.getBlock() instanceof IMultiBlock multiBlock
-                        ? multiBlock.getFullBlockShape(level, pos, state)
-                        : List.of(pos);
+                Set<BlockPos> shape = state.getBlock() instanceof IMultiBlock multiBlock
+                        ? multiBlock.getFullBlockShape(level, pos, state).getGlobalPositions()
+                        : Set.of(pos);
 
                 for (BlockPos blockPos : shape) {
                     level.removeBlock(blockPos, false);

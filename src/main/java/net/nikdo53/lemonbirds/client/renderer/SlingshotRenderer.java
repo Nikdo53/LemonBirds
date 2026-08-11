@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.AABB;
@@ -20,6 +21,7 @@ import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
+import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import org.jetbrains.annotations.NotNull;
 
 public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlockEntity> {
@@ -100,7 +102,8 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
             // the bird sits where the camera is, so drop it while its owner is looking through it
             Minecraft minecraft = Minecraft.getInstance();
             boolean isFirstPerson = !minecraft.gameRenderer.getMainCamera().isDetached();
-            boolean isInvisible = blockEntity.controllingPlayer == minecraft.player && isFirstPerson;
+            BlockPos playerSlingshotPos = minecraft.player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);
+            boolean isInvisible = playerSlingshotPos != null && playerSlingshotPos.equals(blockEntity.getBlockPos()) && isFirstPerson;
 
             if (blockEntity.hasBirdItem() && !isInvisible) {
                 poseStack.pushPose();

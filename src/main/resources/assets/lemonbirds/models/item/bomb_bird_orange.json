@@ -1,0 +1,46 @@
+{
+	"render_type": "translucent",
+
+	"parent": "item/generated",
+	"gui_light": "front",
+	"loader": "neoforge:obj",
+	"flip_v": true,
+	"model": "lemonbirds:models/item/bomb_bird_orange.obj",
+	"textures": {
+		"texture0": "lemonbirds:item/bomb_bird_orange",
+		"particle": "lemonbirds:item/bomb_bird_orange"
+
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -135, 0],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"ground": {
+			"translation": [0, 2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [-158.26, 20.13, 163.56],
+			"translation": [1.0, -1.75, 0],
+			"scale": [0.38, 0.38, 0.38]
+		},
+		"head": {
+			"translation": [0, 1.25, 0]
+		}
+	}
+}

@@ -44,14 +44,9 @@ import java.util.UUID;
 import java.util.function.IntFunction;
 
 public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
-    // Measurements taken from BirdSlingshotModel, so that the block entity and the renderer agree on where the sling is.
-    /** Height of the fork tips - where the bands are anchored - above the bottom of the center block. */
     public static final double ANCHOR_HEIGHT = 1.5 + 70.2843 / 16.0;
-    /** How far behind the fork tips the bands leave the fork. */
     public static final double BAND_START = 8.0 / 16.0;
-    /** Length of the bands as they are modelled, meaning with nothing pulling on them. */
     public static final double BAND_REST_LENGTH = 51.0 / 16.0;
-    /** Distance from the fork tips to the pouch while the bands are relaxed. */
     public static final double POUCH_REST_DISTANCE = BAND_START + BAND_REST_LENGTH;
 
     public static final float MAX_PULL = 3.8F;
@@ -60,10 +55,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
 
     public BirdItem birdItem = null;
 
-    /** Aim rotation, in degrees, relative to the way the slingshot is facing. Positive yaw aims left, positive pitch aims up. */
     public float yaw = 0;
     public float pitch = 0;
-    /** How far the pouch is pulled back, in blocks. */
     public float pull = 0;
 
     public float yawOld = 0;
@@ -71,6 +64,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public float pullOld = 0;
 
     public DummyEntity dummyEntity = null;
+    public int entityId = -1;
+
     public Player controllingPlayer = null;
 
 
@@ -90,8 +85,17 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         return dummyEntity != null;
     }
 
+    public DummyEntity getDummyEntity(Level level){
+        if (level.isClientSide() && level.getEntity(entityId) instanceof DummyEntity ret){
+            return ret;
+        }
+        return dummyEntity;
+    }
+
     public void beginControl(Player player) {
         assert level != null;
+        if (level.isClientSide()) return;
+
         controllingPlayer = player;
 
         dummyEntity = new DummyEntity(level, this.getBlockPos(), player);
@@ -99,17 +103,18 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         level.addFreshEntity(dummyEntity);
 
         player.setData(ModDataAttachments.SLINGSHOT, this.getBlockPos());
-
-        if (level.isClientSide()){
-            ClientThingy.beginControlClient(player, this);
-        }
-
     }
 
     public void tick(Level level, BlockPos pos, BlockState state){
          if (isBeingControlled() && level.getGameTime() % 40 == 0){
              DummyProjectile projectile = new DummyProjectile(level);
              shoot(projectile);
+         }
+
+         if (level.isClientSide()){
+             yawOld = yaw;
+             pitchOld = pitch;
+             pullOld = pull;
          }
     }
 
@@ -123,12 +128,19 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
 
         controllingPlayer = null;
-        dummyEntity.discard();
+        if (dummyEntity != null) {
+            dummyEntity.discard();
+        }
+        entityId = -1;
         dummyEntity = null;
 
-        yaw = yawOld = 0;
-        pitch = pitchOld = 0;
-        pull = pullOld = 0;
+        yaw = 0;
+        pitch = 0;
+        pull = 0;
+
+        yawOld = 0;
+        pitchOld = 0;
+        pullOld = 0;
     }
 
     public void onKeyPressed(Player player, Action action){
@@ -136,7 +148,7 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
             endControl(player);
         }
 
-        if (action == Action.LAUNCH_BIRD && birdItem != null){
+        if (action == Action.LAUNCH_BIRD && hasBirdItem()){
             // The bird is server authoritative. Launching one client side too would only build a bird that
             // ClientLevel silently drops on addFreshEntity - but not before Projectile#shoot has pointed the
             // player's LEMON_BIRD attachment at its id, which then resolves to nothing and leaves the ability
@@ -166,16 +178,17 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     }
 
     public void updateRotation(float yaw, float pitch, float pull){
+/*
         this.yawOld = this.yaw;
         this.pitchOld = this.pitch;
         this.pullOld = this.pull;
 
+*/
         this.yaw = Mth.clamp(yaw, -MAX_YAW, MAX_YAW);
         this.pitch = Mth.clamp(pitch, -MAX_PITCH, MAX_PITCH);
         this.pull = Mth.clamp(pull, 0, MAX_PULL);
 
         moveDummyToPouch();
-        sync();
     }
 
     public void sync(){
@@ -185,24 +198,22 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
     }
 
-    /** Keeps the camera sat in the pouch, so that what the player sees lines up with what the renderer draws. */
     private void moveDummyToPouch(){
-        if (dummyEntity == null) return;
+        DummyEntity entity = getDummyEntity(getLevel());
+        if (entity == null) return;
 
-        Vec3 pos = getPouchPosition(1).subtract(0, dummyEntity.getEyeHeight(), 0);
-        dummyEntity.moveTo(pos.x(), pos.y(), pos.z());
+        Vec3 pos = getPouchPosition(1).subtract(0, entity.getEyeHeight(), 0);
+        entity.moveTo(pos.x(), pos.y(), pos.z());
     }
 
     private @NotNull Direction getDirection() {
         return getBlockState().getValue(BirdSlingshotBlock.FACING);
     }
 
-    /** The fork tips, which the bands hang from and the pouch swings around. */
     public Vec3 getAnchorPosition(BlockPos pos){
         return new Vec3(pos.getX() + 0.5, pos.getY() + ANCHOR_HEIGHT, pos.getZ() + 0.5);
     }
 
-    /** Where the pouch - and with it the bird and the camera - has ended up. */
     public Vec3 getPouchPosition(float partialTick){
         return getAnchorPosition(this.getBlockPos()).add(getRelativePouchPos(partialTick));
     }
@@ -268,16 +279,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
 
         setChanged();
     }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        yawOld = this.yaw;
-        pitchOld = this.pitch;
-        pullOld = this.pull;
-
-        super.handleUpdateTag(tag, lookupProvider);
-    }
-
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
@@ -285,6 +286,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         tag.putFloat("yaw", yaw);
         tag.putFloat("pitch", pitch);
         tag.putFloat("pull", pull);
+        if (dummyEntity != null)
+            tag.putInt("entityId", dummyEntity.getId());
     }
 
     @Override
@@ -293,11 +296,22 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         String string = tag.getString("birdItem");
         if (!string.isBlank()){
             birdItem = (BirdItem) BuiltInRegistries.ITEM.get(ResourceLocation.parse(string));
+        } else {
+            birdItem = null;
         }
+
+        yawOld = yaw;
+        pitchOld = pitch;
+        pullOld = pull;
 
         yaw = tag.getFloat("yaw");
         pitch = tag.getFloat("pitch");
         pull = tag.getFloat("pull");
+        if (tag.contains("entityId")) {
+            entityId = tag.getInt("entityId");
+        } else {
+            entityId = -1;
+        }
     }
 
     public static class ClientThingy{
@@ -332,7 +346,7 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
             ClientLevel level = minecraft.level;
 
             assert level != null;
-            minecraft.setCameraEntity(blockEntity.dummyEntity);
+            minecraft.setCameraEntity(blockEntity.getDummyEntity(level));
         }
 
         public static void onInput(BirdSlingshotBlockEntity blockEntity, Input input){

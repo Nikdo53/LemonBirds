@@ -72,6 +72,16 @@ sourceSets.main.resources {
                 includeGroup "maven.modrinth"
             }
         }
+
+        maven {
+            name = 'GeckoLib'
+            url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            content {
+                includeGroup("software.bernie.geckolib")
+            }
+        }
+
+        mavenLocal()
     }
 
     base {
@@ -112,6 +122,11 @@ sourceSets.main.resources {
                 programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
             }
 
+            clientAuth {
+                client()
+                devLogin = true
+            }
+
             configureEach {
                 systemProperty 'forge.logging.markers', 'REGISTRIES'
                 logLevel = org.slf4j.event.Level.WARN
@@ -145,7 +160,7 @@ sourceSets.main.resources {
         implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
         implementation "curse.maven:explosive-enhancement-reforged-1036246:6520579"
-        jarJar(implementation("maven.modrinth:tiny-multiblock-lib:${tiny_multiblock_lib_version}"))
+        jarJar(implementation("net.nikdo53.tinymultiblocklib:tiny-multiblock-lib-neoforge-1.21.1:4.0.1"))
 
         implementation "maven.modrinth:oWaK0Q19:w7zlLnea"
     }

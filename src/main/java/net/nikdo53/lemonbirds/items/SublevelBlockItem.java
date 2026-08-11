@@ -13,6 +13,7 @@ import net.nikdo53.lemonbirds.util.LemonUtils;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
 
 import java.util.List;
+import java.util.Set;
 
 public class SublevelBlockItem extends BlockItem {
     public SublevelBlockItem(Block block, Properties properties) {
@@ -30,7 +31,7 @@ public class SublevelBlockItem extends BlockItem {
                 BlockPos pos = context.getClickedPos();
                 if (state == null) return InteractionResult.FAIL;
 
-                List<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(context.getLevel(), null, pos, state);
+                Set<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(context.getLevel(), null, pos, state).getGlobalPositions();
 
                 LateTickOperation.schedule(serverLevel, 2, (level) ->
                         LemonUtils.assembleIntoSubLevel(level, getBlock(), pos, shape, this.builtInRegistryHolder().getRegisteredName(), null, null));

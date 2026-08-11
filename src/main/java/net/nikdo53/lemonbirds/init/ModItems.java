@@ -28,6 +28,7 @@ public interface ModItems {
 
     DeferredItem<Item> MATILDA_EGG = ITEMS.register("matilda_egg", () -> new MatildaEggItem(new Item.Properties()));
 
+    DeferredItem<Item> BOMB_BIRD_ORANGE = ITEMS.register("bomb_bird_orange", () -> new Item(new Item.Properties()));
 
   //  DeferredItem<Item> TEST = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
 

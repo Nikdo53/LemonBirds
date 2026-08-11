@@ -14,6 +14,7 @@ public interface ModParticles {
 
     Supplier<SimpleParticleType> LEMON_BIRD_TRAIL = PARTICLES.register("lemon_bird_trail", () -> new SimpleParticleType(false));
     Supplier<SimpleParticleType> LEMON_BIRD_TRAIL_PREVIEW = PARTICLES.register("lemon_bird_trail_preview", () -> new SimpleParticleType(false));
+    Supplier<SimpleParticleType> LEMON_BIRD_ABILITY = PARTICLES.register("lemon_bird_ability", () -> new SimpleParticleType(false));
 
 
 }

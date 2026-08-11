@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
@@ -79,6 +80,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         if (hasAbility() && entityData.get(ABILITY_COOLDOWN) <= 0) {
             entityData.set(DATA_HAS_ABILITY, false);
             activateAbility(xRot, yRot);
+            level().addParticle(ModParticles.LEMON_BIRD_ABILITY.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
         }
     }
 
@@ -150,9 +152,6 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        if (entityData.get(ABILITY_COOLDOWN) > 0) {
-            return;
-        }
         super.onHitBlock(result);
 
         Level level = level();
@@ -259,7 +258,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
                 .setValue(FallingBirdBlock.FACING, Direction.SOUTH);
 
         BlockPos pos = blockPosition();
-        List<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(serverLevel, null, pos, state);
+        Set<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(serverLevel, null, pos, state).getGlobalPositions();
 
         serverLevel.setBlock(pos, state, 3);
 

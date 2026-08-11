@@ -27,7 +27,7 @@ public class LemonBirdsClient {
     @SubscribeEvent
     public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.RED_LEMON_BIRD.get(), LemonBirdRenderer::new);
-        event.registerEntityRenderer(ModEntities.BOMB_LEMON_BIRD.get(), LemonBirdRenderer::new);
+        event.registerEntityRenderer(ModEntities.BOMB_LEMON_BIRD.get(), BombBirdRenderer::new);
         event.registerEntityRenderer(ModEntities.YELLOW_LEMON_BIRD.get(), LemonBirdRenderer::new);
         event.registerEntityRenderer(ModEntities.BLUE_LEMON_BIRD.get(), LemonBirdRenderer::new);
         event.registerEntityRenderer(ModEntities.MATILDA_LEMON_BIRD.get(), LemonBirdRenderer::new);
@@ -47,6 +47,8 @@ public class LemonBirdsClient {
     public static void onRegisterParticles(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticles.LEMON_BIRD_TRAIL.get(), BirdTrailParticle.Provider::createLiving);
         event.registerSpriteSet(ModParticles.LEMON_BIRD_TRAIL_PREVIEW.get(), BirdTrailParticle.Provider::createPreview);
+        event.registerSpriteSet(ModParticles.LEMON_BIRD_ABILITY.get(), BirdTrailParticle.Provider::createAbility);
+
 
     }
 

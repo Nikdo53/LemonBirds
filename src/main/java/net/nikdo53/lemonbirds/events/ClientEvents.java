@@ -8,6 +8,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -21,6 +22,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
+import net.nikdo53.lemonbirds.entities.DummyEntity;
+import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.init.ModKeyBinds;
 import net.nikdo53.lemonbirds.network.ActivateLemonBirdPayload;
@@ -46,7 +49,6 @@ public class ClientEvents {
         BirdSlingshotBlockEntity.Action action = BirdSlingshotBlockEntity.ClientThingy.actionFromKey(key);
         if (pos != null) {
             if (level.getBlockEntity(pos) instanceof BirdSlingshotBlockEntity blockEntity) {
-                if (blockEntity.controllingPlayer != player) return;
                 if (action != null) {
                     blockEntity.onKeyPressed(player, action);
                     PacketDistributor.sendToServer(new SlingshotKeyPressPayload(action));
@@ -79,6 +81,7 @@ public class ClientEvents {
 
         if (key == ModKeyBinds.BIRD_ABILITY.getKey().getValue()) {
             if (lemonBird.hasAbility()) {
+/*
                 int gridSize = 2;
                 for (int x = -gridSize; x < gridSize; x++) {
                     for (int y = -gridSize; y < gridSize; y++) {
@@ -92,6 +95,7 @@ public class ClientEvents {
                         }
                     }
                 }
+*/
 
             }
 
@@ -140,8 +144,6 @@ public class ClientEvents {
         BlockPos pos = player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);
         if (pos != null) {
             if (level.getBlockEntity(pos) instanceof BirdSlingshotBlockEntity blockEntity) {
-                if (blockEntity.controllingPlayer != player) return;
-
                 BirdSlingshotBlockEntity.ClientThingy.onInput(blockEntity, input);
             }
         }
@@ -152,8 +154,26 @@ public class ClientEvents {
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
         Entity cameraEntity = minecraft.getCameraEntity();
+        LocalPlayer player = minecraft.player;
+        ClientLevel level = minecraft.level;
+        if (player == null || level == null) return;
+
         if (cameraEntity != null && cameraEntity.isRemoved()){
-            minecraft.setCameraEntity(minecraft.player);
+            minecraft.setCameraEntity(player);
+        }
+
+        if (cameraEntity instanceof DummyEntity dummyEntity){
+            dummyEntity.player = player;
+        }
+
+        BlockPos slingshotPos = player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);
+        if (slingshotPos != null) {
+            BlockEntity blockEntity = level.getBlockEntity(slingshotPos);
+            if (blockEntity instanceof BirdSlingshotBlockEntity slingShot) {
+                BirdSlingshotBlockEntity.ClientThingy.beginControlClient(player, slingShot);
+            } else {
+              minecraft.setCameraEntity(player);
+            }
         }
     }
 

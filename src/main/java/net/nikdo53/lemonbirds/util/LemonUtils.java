@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 
 import java.util.List;
+import java.util.Set;
 
 
 public class LemonUtils {
@@ -53,7 +54,7 @@ public class LemonUtils {
 
 
     public static void assembleIntoSubLevel(ServerLevel level, Block multiBlock, BlockPos pos,
-                                            List<BlockPos> shape, @Nullable String name, @Nullable Vec2 rotationVector, @Nullable Vec3 bounce) {
+                                            Set<BlockPos> shape, @Nullable String name, @Nullable Vec2 rotationVector, @Nullable Vec3 bounce) {
         if (!level.getBlockState(pos).is(multiBlock)) {
             return;
         }
