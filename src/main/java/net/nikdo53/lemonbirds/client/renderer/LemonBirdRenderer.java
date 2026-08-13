@@ -45,7 +45,6 @@ public class LemonBirdRenderer<T extends AbstractLemonBirdEntity & ItemSupplier>
             poseStack.pushPose();
             poseStack.translate(0.0D, 0.5D, 0.0D);
             poseStack.scale(this.scale, this.scale, this.scale);
-            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             this.itemRenderer
                     .renderStatic(
                             entity.getItem(),

@@ -12,9 +12,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nikdo53.lemonbirds.LemonBirds;
-import net.nikdo53.lemonbirds.blocks.BadPigBlock;
-import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlock;
-import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
+import net.nikdo53.lemonbirds.blocks.*;
 import net.nikdo53.lemonbirds.items.SublevelBlockItem;
 
 import java.util.function.Supplier;
@@ -27,7 +25,7 @@ public interface ModBlocks {
     DeferredBlock<Block> RED_BIRD_BLOCK = BLOCKS.register("red_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> YELLOW_BIRD_BLOCK = BLOCKS.register("yellow_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> BLUE_BIRD_BLOCK = BLOCKS.register("blue_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
-    DeferredBlock<Block> BOMB_BIRD_BLOCK = BLOCKS.register("bomb_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
+    DeferredBlock<Block> BOMB_BIRD_BLOCK = BLOCKS.register("bomb_bird_block", () -> new BombFallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion()));
     DeferredBlock<Block> MATILDA_BIRD_BLOCK = BLOCKS.register("matilda_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion(), FallingBirdBlock.MATILDA_SHAPE));
     DeferredBlock<Block> TERENCE_BIRD_BLOCK = BLOCKS.register("terence_bird_block", () -> new FallingBirdBlock(BlockBehaviour.Properties.of().noOcclusion(), FallingBirdBlock.TERENCE_SHAPE));
 
@@ -38,6 +36,8 @@ public interface ModBlocks {
     DeferredBlock<Block> FOREMAN_PIG_BOSS = registerSableItem("foreman_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.FOREMAN_SHAPE));
     DeferredBlock<Block> CHEF_PIG_BOSS = registerSableItem("chef_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.CHEF_SHAPE));
     DeferredBlock<Block> KING_PIG_BOSS = registerSableItem("king_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.KING_SHAPE));
+
+    DeferredBlock<Block> LEMON_TNT = registerSableItem("lemon_tnt", () -> new LemonTntBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always)));
 
 
     static <T extends Block> DeferredBlock<T> registerWithItem(String name, Supplier<T> block){

@@ -1,6 +1,29 @@
-{  "lemonbirds.creative_tab": "Lemon Birds",
-"key.lemonbirds.slingshot_launch": "Slingshot Launch",
-"key.category.lemonbirds.lemonbirds": "LemonBirds",
-"key.lemonbirds.bird_ability": "Activate Bird Ability"
+{
+  "lemonbirds.creative_tab": "Lemon Birds",
+  "section.lemonbirds.birds": "Birds",
+  "section.lemonbirds.misc": "Miscellaneous",
+  "section.lemonbirds.pigs": "Pigs",
+
+  "key.lemonbirds.slingshot_launch": "Slingshot Launch",
+  "key.category.lemonbirds.lemonbirds": "LemonBirds",
+  "key.lemonbirds.bird_ability": "Activate Bird Ability",
+  "key.lemonbirds.end_camera_control": "End Camera Control",
+
+  "item.lemonbirds.red_bird": "Red Lemon Bird",
+  "item.lemonbirds.blue_bird": "Blue Lemon Bird",
+  "item.lemonbirds.yellow_bird": "Yellow Lemon Bird",
+  "item.lemonbirds.bomb_bird": "Bomb Lemon Bird",
+  "item.lemonbirds.matilda_bird": "Matilda Lemon Bird",
+  "item.lemonbirds.terence_bird": "Terence Lemon Bird",
+  "item.lemonbirds.matilda_egg": "Matilda Egg",
+
+  "block.lemonbirds.bird_sling_shot": "Bird Slingshot",
+  "block.lemonbirds.bad_pig": "Bad Pig",
+  "block.lemonbirds.corporal_pig": "Corporal Pig",
+  "block.lemonbirds.foreman_pig_boss": "Foreman Pig Boss",
+  "block.lemonbirds.chef_pig_boss": "Chef Pig Boss",
+  "block.lemonbirds.king_pig_boss": "King Pig Boss",
+  "block.lemonbirds.lemon_tnt": "Lemon TNT"
+
 
 }

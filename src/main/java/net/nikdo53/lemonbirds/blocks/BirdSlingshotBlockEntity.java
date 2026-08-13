@@ -49,8 +49,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public static final double BAND_REST_LENGTH = 51.0 / 16.0;
     public static final double POUCH_REST_DISTANCE = BAND_START + BAND_REST_LENGTH;
 
+    public static final float MAX_YAW = 720;
     public static final float MAX_PULL = 3.8F;
-    public static final float MAX_YAW = 30;
     public static final float MAX_PITCH = 30;
 
     public BirdItem birdItem = null;

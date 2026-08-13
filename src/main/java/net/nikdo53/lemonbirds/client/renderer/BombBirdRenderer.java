@@ -59,7 +59,6 @@ public class BombBirdRenderer<T extends BombLemonBirdEntity & ItemSupplier> exte
             poseStack.scale(explosionScale, explosionScale, explosionScale);
 
 
-            poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
             this.itemRenderer
                     .renderStatic(
                             entity.getItem(),

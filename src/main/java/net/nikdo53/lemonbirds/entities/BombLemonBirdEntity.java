@@ -45,6 +45,8 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
     public void turnIntoBlock() {
         if (hasAbility()) {
             super.turnIntoBlock();
+        } else if (!isRemoved()){
+            birdExplosion(level(), this.position(), this);
         }
     }
 
@@ -59,7 +61,7 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
     @Override
     public void tick() {
         super.tick();
-        if (getExplodingTicks() >= EXPLOSION_DELAY){
+        if (getExplodingTicks() >= EXPLOSION_DELAY && !isRemoved()){
             birdExplosion(level(), this.position(), this);
             this.discard();
         } else if (isExploding()){

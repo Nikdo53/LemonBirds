@@ -44,7 +44,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
        tag(ModBlockTags.LEMON_BIRDS_WOOD).addTags(BlockTags.MINEABLE_WITH_AXE);
        tag(ModBlockTags.LEMON_BIRDS_STONE).addTags(BlockTags.BASE_STONE_OVERWORLD, BlockTags.STONE_BRICKS, Tags.Blocks.COBBLESTONES);
        tag(ModBlockTags.LEMON_BIRDS_GLASS).addTags(Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.GLASS_PANES);
-       tag(ModBlockTags.LEMON_BIRDS_HAY).addTag(BlockTags.WOOL).add(Blocks.HAY_BLOCK).addTag(BlockTags.LEAVES).add(Blocks.TNT);
+       tag(ModBlockTags.LEMON_BIRDS_HAY).addTag(BlockTags.WOOL).add(Blocks.HAY_BLOCK).addTag(BlockTags.LEAVES).add(Blocks.TNT).add(ModBlocks.LEMON_TNT.get());
 
         for (DeferredHolder<Block, ? extends Block> entry : ModBlocks.BLOCKS.getEntries()) {
             tag(ModBlockTags.LEMON_BIRD).add(entry.get());

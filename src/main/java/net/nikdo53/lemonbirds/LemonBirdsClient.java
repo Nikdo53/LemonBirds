@@ -40,6 +40,7 @@ public class LemonBirdsClient {
 
 
         event.registerBlockEntityRenderer(ModBlockEntities.SLING_SHOT.get(), SlingshotRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.FALLING_BIRD_BOMB.get(), BombBlockRenderer::new);
 
     }
 

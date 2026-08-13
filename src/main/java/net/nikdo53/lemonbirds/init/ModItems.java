@@ -32,5 +32,6 @@ public interface ModItems {
 
   //  DeferredItem<Item> TEST = ITEMS.register("test_item", () -> new TestItem(new Item.Properties()));
 
+    DeferredItem<Item> EMPTY_ITEM = ITEMS.register("empty_item", () -> new Item(new Item.Properties()));
 
 }

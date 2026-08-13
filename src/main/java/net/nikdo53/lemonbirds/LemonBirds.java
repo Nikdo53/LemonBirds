@@ -1,6 +1,9 @@
 package net.nikdo53.lemonbirds;
 
+import net.mcexpanded.fancytabsections.FancyTabSections;
+import net.mcexpanded.fancytabsections.Section.SectionColored;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.nikdo53.lemonbirds.init.*;
 import org.slf4j.Logger;
 
@@ -9,6 +12,9 @@ import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(LemonBirds.MOD_ID)
 public class LemonBirds {
@@ -23,6 +29,40 @@ public class LemonBirds {
         ModParticles.PARTICLES.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
+
+
+        FancyTabSections.addSection(loc("lemonbirds_tab"),
+                new SectionColored(loc("birds"))
+                        .add(ModItems.RED_BIRD)
+                        .add(ModItems.BOMB_BIRD)
+                        .add(ModItems.YELLOW_BIRD)
+                        .add(ModItems.BLUE_BIRD)
+                        .add(ModItems.MATILDA_BIRD)
+                        .add(ModItems.TERENCE_BIRD)
+                        .setBannerColor(0xFFFF0000)
+        );
+
+        FancyTabSections.addSection(loc("lemonbirds_tab"),
+                new SectionColored(loc("misc"))
+                        .add(ModBlocks.SLING_SHOT)
+                        .add(ModBlocks.LEMON_TNT)
+                        .add(ModItems.MATILDA_EGG)
+                        .setBannerColor(0xFF333333)
+        );
+
+        FancyTabSections.addSection(loc("lemonbirds_tab"),
+                new SectionColored(loc("pigs"))
+                        .add(ModBlocks.BAD_PIG)
+                        .add(ModBlocks.CORPORAL_PIG)
+                        .add(ModBlocks.FOREMAN_PIG_BOSS)
+                        .add(ModBlocks.CHEF_PIG_BOSS)
+                        .add(ModBlocks.KING_PIG_BOSS)
+                        .setBannerColor(0xFF00FF00)
+        );
+
+
+
+
     }
 
 
