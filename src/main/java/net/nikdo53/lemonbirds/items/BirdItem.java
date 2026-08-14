@@ -68,7 +68,7 @@ public class BirdItem extends Item implements ProjectileItem {
     }
 
     public float getFlyingSpeed() {
-        return this == ModItems.TERENCE_BIRD.get() ? 0.5F : 1.0F;
+        return this == ModItems.TERENCE_BIRD.get() ? 1.5F : 2.0F;
     }
 
     @Override

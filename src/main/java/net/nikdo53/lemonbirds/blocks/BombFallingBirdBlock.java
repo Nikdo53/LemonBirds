@@ -18,6 +18,6 @@ public class BombFallingBirdBlock extends FallingBirdBlock{
 
     @Override
     public RenderShape getMultiblockRenderShape(BlockState state, boolean isCenter) {
-        return isCenter ? RenderShape.ENTITYBLOCK_ANIMATED : RenderShape.INVISIBLE;
+        return isCenter ? (state.getValue(DESPAWNS) ? RenderShape.ENTITYBLOCK_ANIMATED : RenderShape.MODEL) : RenderShape.INVISIBLE;
     }
 }

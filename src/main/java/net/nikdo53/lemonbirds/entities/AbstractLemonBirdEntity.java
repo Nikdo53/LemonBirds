@@ -120,6 +120,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     @Override
     public void tick() {
         super.tick();
+
         if (entityData.get(ABILITY_COOLDOWN) > 0) {
             entityData.set(ABILITY_COOLDOWN, entityData.get(ABILITY_COOLDOWN) - 1);
         }
@@ -130,14 +131,15 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
         Entity aimSource = getAimSource();
         if (aimSource != null) {
+            this.yRotO = this.getYRot();
+            this.xRotO = this.getXRot();
             setRot(aimSource.getYRot(), aimSource.getXRot());
-            this.yRotO = aimSource.getYRot();
-            this.xRotO = aimSource.getXRot();
         }
 
         if (level().isClientSide() && getControllingPlayer().isPresent()) {
             BirdSlingshotBlockEntity.ClientThingy.trySetCamera(this, getControllingPlayer().get());
         }
+
     }
 
 
@@ -165,7 +167,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
         Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, level.getBlockState(pos));
         double speed = 10.0 * movement.lengthSqr();
-        double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed());
+        double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed() / 2);
 
         if (level.getBlockState(pos).getBlock() instanceof BadPigBlock pigBlock && level instanceof ServerLevel serverLevel){
             pigBlock.sable$getCallback().onHitWithVelocity(serverLevel, pos, level.getBlockState(pos), getDeltaMovement().lengthSqr() * 5);
@@ -175,7 +177,11 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
         if (speed > 5 && getDestroyEffectivity().canDestroy) {
             BlockPos.betweenClosedStream(AABB.ofSize(location, size, size, size))
-                    .forEach(blockPos -> level.destroyBlock(blockPos, false));
+                    .forEach(blockPos -> {
+                        if (level.getBlockState(blockPos).is(ModBlockTags.BIRD_BREAKABLE)) {
+                            level.destroyBlock(blockPos, false);
+                        }
+                    });
 
             entityData.set(ABILITY_COOLDOWN, 1);
 

@@ -1,6 +1,7 @@
 package net.nikdo53.lemonbirds.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -58,6 +59,9 @@ public class BombBirdRenderer<T extends BombLemonBirdEntity & ItemSupplier> exte
             poseStack.scale(this.scale, this.scale, this.scale);
             poseStack.scale(explosionScale, explosionScale, explosionScale);
 
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getViewYRot(partialTicks) - 180F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(-entity.getViewXRot(partialTicks)));
 
             this.itemRenderer
                     .renderStatic(

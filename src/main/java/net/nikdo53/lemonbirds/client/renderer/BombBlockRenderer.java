@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.nikdo53.lemonbirds.blocks.BombFallingBirdBlockEntity;
+import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModItems;
 import net.nikdo53.tinymultiblocklib.client.TintedBufferSource;
@@ -24,6 +25,9 @@ public class BombBlockRenderer<T extends BombFallingBirdBlockEntity> implements 
     @Override
     public void render(BombFallingBirdBlockEntity entity, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        if (!entity.getBlockState().getValue(FallingBirdBlock.DESPAWNS)){
+            return;
+        }
 
         float explodingTicks = entity.tickCount + partialTicks;
         float explosionProgress =  explodingTicks / BombLemonBirdEntity.EXPLOSION_DELAY;

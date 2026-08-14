@@ -1,6 +1,7 @@
 package net.nikdo53.lemonbirds.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -45,6 +47,10 @@ public class LemonBirdRenderer<T extends AbstractLemonBirdEntity & ItemSupplier>
             poseStack.pushPose();
             poseStack.translate(0.0D, 0.5D, 0.0D);
             poseStack.scale(this.scale, this.scale, this.scale);
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getViewYRot(partialTicks) - 180F));
+            poseStack.mulPose(Axis.XP.rotationDegrees(-entity.getViewXRot(partialTicks)));
+
             this.itemRenderer
                     .renderStatic(
                             entity.getItem(),

@@ -7,6 +7,8 @@ import net.nikdo53.lemonbirds.LemonBirds;
 
 public interface ModBlockTags {
 
+    TagKey<Block> BIRD_BREAKABLE = TagKey.create(Registries.BLOCK, LemonBirds.loc("bird_breakable"));
+
     TagKey<Block> LEMON_BIRDS_WOOD = TagKey.create(Registries.BLOCK, LemonBirds.loc("lemon_birds_wood"));
     TagKey<Block> LEMON_BIRDS_STONE = TagKey.create(Registries.BLOCK, LemonBirds.loc("lemon_birds_stone"));
     TagKey<Block> LEMON_BIRDS_GLASS = TagKey.create(Registries.BLOCK, LemonBirds.loc("lemon_birds_glass"));

@@ -50,6 +50,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
             tag(ModBlockTags.LEMON_BIRD).add(entry.get());
         }
 
+        tag(ModBlockTags.BIRD_BREAKABLE).addTags(ModBlockTags.LEMON_BIRDS_WOOD, ModBlockTags.LEMON_BIRDS_STONE, ModBlockTags.LEMON_BIRDS_GLASS, ModBlockTags.LEMON_BIRDS_HAY);
+
         tag(BOUNCY).addTags(ModBlockTags.LEMON_BIRD);
     }
 }

@@ -29,7 +29,10 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevelCollisionCallback {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -128,6 +131,7 @@ public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevel
 
     public static class Callback extends FragileBlockCallback {
         @Override
+        //min value
         public double getTriggerVelocity() {
             return 6.0;
         }
@@ -160,11 +164,27 @@ public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevel
             return new CollisionResult(JOMLConversion.ZERO, true);
         }
 
+        Map<Supplier<Block>, Double> triggerVelocities = Map.of(
+                ModBlocks.KING_PIG_BOSS, 15.0,
+                ModBlocks.FOREMAN_PIG_BOSS, 13.0,
+                ModBlocks.CHEF_PIG_BOSS, 12.0,
+                ModBlocks.CORPORAL_PIG, 8.0,
+                ModBlocks.BAD_PIG, 6.0
+        );
+
+        public double getTriggerVelocity(BlockState state) {
+            AtomicReference<Double> ret = new AtomicReference<>(getTriggerVelocity());
+            triggerVelocities.forEach((blockSupplier, velocity) -> {;
+                if (state.getBlock() == blockSupplier.get()) {
+                    ret.set(velocity);
+                }
+            });
+            return ret.get();
+        }
+
 
         public CollisionResult onHitWithVelocity(ServerLevel level, BlockPos pos, BlockState state, double velocity) {
-            System.out.println("velocity = " + velocity);
-
-            int damageAmount = (int) Math.floor(velocity / getTriggerVelocity());
+            int damageAmount = (int) Math.floor(velocity / getTriggerVelocity(state));
             if (damageAmount < 1) {
                 return CollisionResult.NONE;
             }

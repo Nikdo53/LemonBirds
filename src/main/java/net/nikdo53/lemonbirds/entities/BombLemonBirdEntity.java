@@ -76,7 +76,7 @@ public class BombLemonBirdEntity extends AbstractLemonBirdEntity{
     }
 
     public static void birdExplosion(Level level, Position pos, @Nullable Entity source){
-        level.explode(source, pos.x(), pos.y(), pos.z(), 2.0f, Level.ExplosionInteraction.MOB);
+        level.explode(source, pos.x(), pos.y(), pos.z(), 4.0f, Level.ExplosionInteraction.MOB);
     }
 
     public BombLemonBirdEntity(Level level, Player player) {

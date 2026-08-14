@@ -1,19 +1,22 @@
 package net.nikdo53.lemonbirds;
 
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
 import net.nikdo53.lemonbirds.client.renderer.*;
-import net.nikdo53.lemonbirds.init.ModBlockEntities;
-import net.nikdo53.lemonbirds.init.ModEntities;
-import net.nikdo53.lemonbirds.init.ModKeyBinds;
-import net.nikdo53.lemonbirds.init.ModParticles;
+import net.nikdo53.lemonbirds.init.*;
 import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 
 
@@ -22,6 +25,13 @@ import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 public class LemonBirdsClient {
     public LemonBirdsClient(ModContainer container) {
 
+    }
+
+    @SubscribeEvent
+    public static void clientSetup(final FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.KING_PIG_BOSS.get(), RenderType.cutoutMipped());
+        });
     }
 
     @SubscribeEvent
