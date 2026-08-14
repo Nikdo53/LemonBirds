@@ -12,8 +12,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.nikdo53.lemonbirds.client.PigOverlay;
 import net.nikdo53.lemonbirds.client.model.BirdSlingshotModel;
 import net.nikdo53.lemonbirds.client.renderer.*;
 import net.nikdo53.lemonbirds.init.*;
@@ -32,6 +34,11 @@ public class LemonBirdsClient {
         event.enqueueWork(() -> {
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.KING_PIG_BOSS.get(), RenderType.cutoutMipped());
         });
+    }
+
+    @SubscribeEvent
+    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(LemonBirds.loc("tracked_fish"), new PigOverlay());
     }
 
     @SubscribeEvent
