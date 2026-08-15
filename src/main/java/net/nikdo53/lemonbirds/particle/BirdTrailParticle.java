@@ -67,6 +67,10 @@ public class BirdTrailParticle extends TextureSheetParticle implements ParticleO
         }
 
 
+        public static Provider createFeather(SpriteSet sprites) {
+            return new Provider(sprites, 15, 1);
+        }
+
         @Override
         public @Nullable Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             return new BirdTrailParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, type, sprites, lifetime, size);

@@ -80,7 +80,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         if (hasAbility() && entityData.get(ABILITY_COOLDOWN) <= 0) {
             entityData.set(DATA_HAS_ABILITY, false);
             activateAbility(xRot, yRot);
-            level().addParticle(ModParticles.LEMON_BIRD_ABILITY.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
+            level().addParticle(ModParticles.LEMON_BIRD_ABILITY.get(), true, getX(), getY() + 0.5, getZ(), 0, 0, 0);
         }
     }
 
@@ -126,7 +126,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         }
 
         if (level().isClientSide()){
-            level().addParticle(ModParticles.LEMON_BIRD_TRAIL.get(), getX(), getY() + 0.5, getZ(), 0, 0, 0);
+            level().addParticle(ModParticles.LEMON_BIRD_TRAIL.get(), true, getX(), getY() + 0.5, getZ(), 0, 0, 0);
         }
 
         Entity aimSource = getAimSource();

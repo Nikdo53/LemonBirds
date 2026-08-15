@@ -61,6 +61,15 @@ public class LemonBirdsClient {
         event.registerSpriteSet(ModParticles.LEMON_BIRD_ABILITY.get(), BirdTrailParticle.Provider::createAbility);
 
 
+        event.registerSpriteSet(ModParticles.FEATHER_BLUE.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_MATILDA.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_TERENCE.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_YELLOW.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_RED.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_BOMB.get(), BirdTrailParticle.Provider::createFeather);
+
+        event.registerSpriteSet(ModParticles.PIG_BLOB.get(), BirdTrailParticle.Provider::createFeather);
+
     }
 
     @SubscribeEvent

@@ -38,7 +38,7 @@ public class DummyProjectile extends ThrowableProjectile {
         super.tick();
         if (level().isClientSide()){
             Vec3 pos = this.position();
-            level().addParticle(ModParticles.LEMON_BIRD_TRAIL_PREVIEW.get(), pos.x, pos.y, pos.z, 0, 0,0);
+            level().addParticle(ModParticles.LEMON_BIRD_TRAIL_PREVIEW.get(), true, pos.x, pos.y, pos.z, 0, 0,0);
         }
     }
 }

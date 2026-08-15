@@ -3,6 +3,9 @@ package net.nikdo53.lemonbirds.blocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,6 +21,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.nikdo53.lemonbirds.init.ModBlocks;
+import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
 import org.jetbrains.annotations.Nullable;
@@ -74,6 +79,38 @@ public class FallingBirdBlock extends AbstractMultiBlock {
     @Override
     public @Nullable DirectionProperty getDirectionProperty() {
         return FACING;
+    }
+
+    public SimpleParticleType getParticle(){
+        if (this == ModBlocks.RED_BIRD_BLOCK.get()){
+            return ModParticles.FEATHER_RED.get();
+        } else if (this == ModBlocks.BLUE_BIRD_BLOCK.get()){
+            return ModParticles.FEATHER_BLUE.get();
+        } else if (this == ModBlocks.BOMB_BIRD_BLOCK.get()){
+            return ModParticles.FEATHER_BOMB.get();
+        } else if (this == ModBlocks.YELLOW_BIRD_BLOCK.get()){
+            return ModParticles.FEATHER_YELLOW.get();
+        } else if (this == ModBlocks.MATILDA_BIRD_BLOCK.get()){
+            return ModParticles.FEATHER_MATILDA.get();
+        } else if (this == ModBlocks.TERENCE_BIRD_BLOCK.get()){
+            return ModParticles.FEATHER_TERENCE.get();
+        } else {
+            return ModParticles.FEATHER_RED.get();
+        }
+    }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        super.onRemove(state, level, pos, newState, movedByPiston);
+
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        RandomSource random = level.getRandom();
+        float x = random.nextFloat() ;
+        float y = random.nextFloat() ;
+        float z = random.nextFloat() ;
+
+        serverLevel.sendParticles(getParticle(), pos.getX() + 0.5f, pos.getY()+ 0.5f, pos.getZ()+ 0.5f,  10,x,y,z, 0.04);
+
     }
 
     @Override

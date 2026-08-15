@@ -8,6 +8,7 @@ import dev.ryanhcode.sable.sublevel.system.SubLevelPhysicsSystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -22,6 +23,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.*;
 import net.nikdo53.lemonbirds.init.ModBlocks;
+import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
 import net.nikdo53.tinymultiblocklib.components.SharedStatePropertiesBuilder;
@@ -72,6 +74,21 @@ public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevel
         super.createSharedBlockStates(builder);
         builder.add(DAMAGE);
     }
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        super.onRemove(state, level, pos, newState, movedByPiston);
+
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        RandomSource random = level.getRandom();
+        float x = random.nextFloat() ;
+        float y = random.nextFloat() ;
+        float z = random.nextFloat() ;
+
+        serverLevel.sendParticles(ModParticles.PIG_BLOB.get(), pos.getX() + 0.5f, pos.getY()+ 0.5f, pos.getZ()+ 0.5f,  10,x,y,z, 0.04);
+
+    }
+
 
     public static final BiFunction<BlockPos, Direction, List<BlockPos>> ONE_BLOCK =
             (pos, direction) -> List.of(pos);
