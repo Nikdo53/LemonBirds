@@ -111,6 +111,7 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
                     // the parts bring the anchor height along in their own offsets, an item has to be lifted to it
                     poseStack.translate(0, ANCHOR_Y, pouchDistance - BIRD_INSET);
                     Vec3 slingshotModelOffset = blockEntity.birdItem.getSlingshotModelOffset();
+                    poseStack.translate(0, 0, -0.01);
                     poseStack.translate(slingshotModelOffset.x(), slingshotModelOffset.y(), slingshotModelOffset.z());
                     poseStack.scale(2, 2, 2);
                     itemRenderer.renderStatic(blockEntity.birdItem.getDefaultInstance(),

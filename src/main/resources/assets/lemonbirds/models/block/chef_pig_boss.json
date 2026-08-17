@@ -8,7 +8,7 @@
 	"model": "lemonbirds:models/block/chef_pig_boss.obj",
 	"textures": {
 		"texture0": "lemonbirds:block/chef_pig_boss",
-		"particle": "lemonbirds:block/chef_pig_boss"
+		"particle": "lemonbirds:block/empty"
 
 	},
 	"display": {

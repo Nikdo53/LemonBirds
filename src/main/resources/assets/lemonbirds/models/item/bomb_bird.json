@@ -8,7 +8,7 @@
 	"model": "lemonbirds:models/item/bomb_bird.obj",
 	"textures": {
 		"texture0": "lemonbirds:item/bomb_bird",
-		"particle": "lemonbirds:item/bomb_bird"
+		"particle": "lemonbirds:block/empty"
 
 	},
 	"display": {

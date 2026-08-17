@@ -6,7 +6,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"1": "lemonbirds:item/red_bird",
-		"particle": "lemonbirds:item/red_bird"
+		"particle": "lemonbirds:block/empty"
 	},
 	"elements": [
 		{

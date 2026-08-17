@@ -4,6 +4,6 @@
 
 	"textures": {
 		"2": "lemonbirds:block/bad_pig_f1",
-		"particle": "lemonbirds:block/bad_pig_f1"
+		"particle": "lemonbirds:block/empty"
 	}
 }

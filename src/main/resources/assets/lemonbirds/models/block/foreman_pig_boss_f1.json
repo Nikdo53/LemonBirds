@@ -8,7 +8,7 @@
 	"model": "lemonbirds:models/block/foreman_pig_boss_f1.obj",
 	"textures": {
 		"texture0": "lemonbirds:block/foreman_pig_boss_f1",
-		"particle": "lemonbirds:block/foreman_pig_boss_f1"
+		"particle": "lemonbirds:block/empty"
 
 	}
 }

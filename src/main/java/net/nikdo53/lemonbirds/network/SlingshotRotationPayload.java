@@ -33,7 +33,10 @@ public record SlingshotRotationPayload(float yaw, float pitch, float pull) imple
             Player player = context.player();
             Level level = player.level();
 
-            BlockPos pos = player.getData(ModDataAttachments.SLINGSHOT);
+            // Whatever was in flight when the player let go of the slingshot still arrives afterwards.
+            BlockPos pos = player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT);
+            if (pos == null) return;
+
             if (level.getBlockEntity(pos) instanceof BirdSlingshotBlockEntity blockEntity) {
                 blockEntity.updateRotation(yaw, pitch, pull);
             }

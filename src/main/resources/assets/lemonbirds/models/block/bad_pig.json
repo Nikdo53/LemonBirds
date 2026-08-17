@@ -7,7 +7,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"2": "lemonbirds:block/bad_pig",
-		"particle": "lemonbirds:block/bad_pig"
+		"particle": "lemonbirds:block/empty"
 	},
 	"elements": [
 		{

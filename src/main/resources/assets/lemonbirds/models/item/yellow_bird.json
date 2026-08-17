@@ -6,7 +6,7 @@
 	"model": "lemonbirds:models/item/yellow_bird.obj",
 	"textures": {
 		"texture0": "lemonbirds:item/yellow_bird",
-		"particle": "lemonbirds:item/yellow_bird"
+		"particle": "lemonbirds:block/empty"
 	},
 
 	"display": {

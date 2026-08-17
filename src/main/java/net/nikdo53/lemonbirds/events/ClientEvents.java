@@ -133,6 +133,24 @@ public class ClientEvents {
         }
     }
 
+    /**
+     * Stops attack and use from ever leaving the client while a player is aiming a slingshot.
+     * <p>
+     * {@link net.nikdo53.lemonbirds.events.ServerEvents} turns the interactions themselves down, but only this
+     * catches them early enough that the arm never swings and the block never flickers as the server puts it back.
+     * Pick block is left alone - it takes nothing and changes nothing in the world.
+     */
+    @SubscribeEvent
+    public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null || !BirdSlingshotBlockEntity.isControllingSlingshot(player)) return;
+
+        if (event.isAttack() || event.isUseItem()) {
+            event.setSwingHand(false);
+            event.setCanceled(true);
+        }
+    }
+
     @SubscribeEvent
     public static void onMovementInput(MovementInputUpdateEvent event) {
         Minecraft minecraft = Minecraft.getInstance();

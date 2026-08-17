@@ -146,7 +146,7 @@ sourceSets.main.resources {
 
     dependencies {
         api("dev.ryanhcode.sable:sable-common-${minecraft_version}:${sable_version}")
-        runtimeOnly ("curse.maven:sable-1312371:8263584")
+        runtimeOnly ("curse.maven:sable-1312371:8666912")
         jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:[${project.sable_companion_version},)")) {
             version {
                 prefer(project.sable_companion_version)
@@ -160,7 +160,7 @@ sourceSets.main.resources {
         implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
         implementation "curse.maven:explosive-enhancement-reforged-1036246:6520579"
-        jarJar(implementation("net.nikdo53.tinymultiblocklib:tiny-multiblock-lib-neoforge-1.21.1:4.0.1"))
+        jarJar(implementation("net.nikdo53.tinymultiblocklib:tiny-multiblock-lib-neoforge-1.21.1:4.0.0"))
 
         jarJar(implementation("maven.modrinth:fancytabsections:6.1-NEOFORGE-1.21.1"))
 

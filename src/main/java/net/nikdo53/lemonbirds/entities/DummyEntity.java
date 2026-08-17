@@ -32,13 +32,20 @@ public class DummyEntity extends Entity {
         this.setInvulnerable(true);
     }
 
+    /**
+     * The pouch position is worked out from the slingshot on whichever side is asking, so the server's copy of it
+     * arriving a round trip late has nothing to add - and applying it would drag the camera back off the position
+     * the client already has it interpolating towards.
+     */
     @Override
-    public void moveTo(double x, double y, double z, float yRot, float xRot) {
-        this.setOldPosAndRot();
-        this.setPosRaw(x, y, z);
-        this.setYRot(yRot);
-        this.setXRot(xRot);
-        this.reapplyPosition();
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
+    }
+
+    @Override
+    public boolean shouldBeSaved() {
+        // Only the slingshot knows this exists, and it does not remember it across a save, so a dummy that came back
+        // with the chunk would be one nothing could ever get rid of.
+        return false;
     }
 
     public BlockPos getBlockEntityPos() {
@@ -68,8 +75,11 @@ public class DummyEntity extends Entity {
     public void tick() {
         super.tick();
 
-        if (tickCount % 20 == 0){
-            if (!(level().getBlockEntity(getBlockEntityPos()) instanceof BirdSlingshotBlockEntity blockEntity)){
+        // A dummy the slingshot has let go of - because the block entity went away, or reloaded and forgot it - has
+        // nothing left pointing at it, so it would sit and tick for the rest of the world's life.
+        if (tickCount % 20 == 0 && !level().isClientSide()){
+            if (!(level().getBlockEntity(getBlockEntityPos()) instanceof BirdSlingshotBlockEntity blockEntity)
+                    || blockEntity.dummyEntity != this){
                 this.discard();
             }
         }

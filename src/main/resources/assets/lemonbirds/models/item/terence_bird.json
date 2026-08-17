@@ -8,7 +8,7 @@
 	"model": "lemonbirds:models/item/terence_bird.obj",
 	"textures": {
 		"texture0": "lemonbirds:item/terence_bird",
-		"particle": "lemonbirds:item/terence_bird"
+		"particle": "lemonbirds:block/empty"
 
 	},
 	"display": {

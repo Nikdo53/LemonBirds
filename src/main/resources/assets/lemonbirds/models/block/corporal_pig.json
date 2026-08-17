@@ -7,7 +7,7 @@
 	"texture_size": [128, 128],
 	"textures": {
 		"2": "lemonbirds:block/corporal_pig",
-		"particle": "lemonbirds:block/corporal_pig"
+		"particle": "lemonbirds:block/empty"
 	},
 	"elements": [
 		{
