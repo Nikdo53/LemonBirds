@@ -214,7 +214,7 @@ public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevel
 
             } else {
 
-                LateTickOperation.schedule(level, 1, l -> {
+                LateTickOperation.schedule(level, 3, l -> {
                     level.setBlockAndUpdate(pos, state.setValue(DAMAGE, damage));
                 });
             }
