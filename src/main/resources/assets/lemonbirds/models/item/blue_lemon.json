@@ -4,7 +4,7 @@
 	"render_type": "cutout_mipped",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "lemonbirds:item/blue_bird",
+		"0": "lemonbirds:item/blue_lemon",
 		"particle": "lemonbirds:block/empty"
 	},
 	"elements": [

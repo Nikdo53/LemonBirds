@@ -43,7 +43,7 @@ public class BombBlockRenderer<T extends BombFallingBirdBlockEntity> implements 
 
         itemRenderer
                 .renderStatic(
-                        ModItems.BOMB_BIRD.toStack(),
+                        ModItems.BOMB_LEMON.toStack(),
                         ItemDisplayContext.GROUND,
                         packedLight,
                         OverlayTexture.NO_OVERLAY,
@@ -56,7 +56,7 @@ public class BombBlockRenderer<T extends BombFallingBirdBlockEntity> implements 
         poseStack.scale(1.01f, 1.01f, 1.01f);
         itemRenderer
                 .renderStatic(
-                        ModItems.BOMB_BIRD_ORANGE.get().getDefaultInstance(),
+                        ModItems.BOMB_LEMON_ORANGE.get().getDefaultInstance(),
                         ItemDisplayContext.GROUND,
                         packedLight,
                         OverlayTexture.NO_OVERLAY,

@@ -6,21 +6,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
@@ -82,18 +77,18 @@ public class FallingBirdBlock extends AbstractMultiBlock {
     }
 
     public SimpleParticleType getParticle(){
-        if (this == ModBlocks.RED_BIRD_BLOCK.get()){
+        if (this == ModBlocks.RED_LEMON_BLOCK.get()){
             return ModParticles.FEATHER_RED.get();
-        } else if (this == ModBlocks.BLUE_BIRD_BLOCK.get()){
+        } else if (this == ModBlocks.BLUE_LEMON_BLOCK.get()){
             return ModParticles.FEATHER_BLUE.get();
-        } else if (this == ModBlocks.BOMB_BIRD_BLOCK.get()){
+        } else if (this == ModBlocks.BOMB_LEMON_BLOCK.get()){
             return ModParticles.FEATHER_BOMB.get();
-        } else if (this == ModBlocks.YELLOW_BIRD_BLOCK.get()){
+        } else if (this == ModBlocks.YELLOW_LEMON_BLOCK.get()){
             return ModParticles.FEATHER_YELLOW.get();
-        } else if (this == ModBlocks.MATILDA_BIRD_BLOCK.get()){
-            return ModParticles.FEATHER_MATILDA.get();
-        } else if (this == ModBlocks.TERENCE_BIRD_BLOCK.get()){
-            return ModParticles.FEATHER_TERENCE.get();
+        } else if (this == ModBlocks.WHITE_LEMON_BLOCK.get()){
+            return ModParticles.FEATHER_WHITE.get();
+        } else if (this == ModBlocks.BIG_LEMON_BLOCK.get()){
+            return ModParticles.FEATHER_BIG.get();
         } else {
             return ModParticles.FEATHER_RED.get();
         }

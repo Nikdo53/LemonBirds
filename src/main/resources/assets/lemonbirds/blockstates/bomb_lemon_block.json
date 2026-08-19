@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=east": {
-      "model": "lemonbirds:item/bomb_bird",
+      "model": "lemonbirds:item/bomb_lemon",
       "y": 90
     },
     "facing=north": {
-      "model": "lemonbirds:item/bomb_bird"
+      "model": "lemonbirds:item/bomb_lemon"
     },
     "facing=south": {
-      "model": "lemonbirds:item/bomb_bird",
+      "model": "lemonbirds:item/bomb_lemon",
       "y": 180
     },
     "facing=west": {
-      "model": "lemonbirds:item/bomb_bird",
+      "model": "lemonbirds:item/bomb_lemon",
       "y": 270
     }
   }

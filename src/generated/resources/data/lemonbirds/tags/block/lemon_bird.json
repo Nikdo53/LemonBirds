@@ -1,12 +1,12 @@
 {
   "values": [
     "lemonbirds:falling_lemon_bird_block",
-    "lemonbirds:red_bird_block",
-    "lemonbirds:yellow_bird_block",
-    "lemonbirds:blue_bird_block",
-    "lemonbirds:bomb_bird_block",
-    "lemonbirds:matilda_bird_block",
-    "lemonbirds:terence_bird_block",
+    "lemonbirds:red_lemon_block",
+    "lemonbirds:yellow_lemon_block",
+    "lemonbirds:blue_lemon_block",
+    "lemonbirds:bomb_lemon_block",
+    "lemonbirds:white_lemon_block",
+    "lemonbirds:big_lemon_block",
     "lemonbirds:bird_sling_shot",
     "lemonbirds:bad_pig",
     "lemonbirds:corporal_pig",

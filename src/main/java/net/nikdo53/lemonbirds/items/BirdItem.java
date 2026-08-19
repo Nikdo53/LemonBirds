@@ -71,7 +71,7 @@ public class BirdItem extends Item implements ProjectileItem {
     }
 
     public float getFlyingSpeed() {
-        return this == ModItems.TERENCE_BIRD.get() ? 1.5F : 2.0F;
+        return this == ModItems.BIG_LEMON.get() ? 1.5F : 2.0F;
     }
 
     @Override
@@ -106,11 +106,11 @@ public class BirdItem extends Item implements ProjectileItem {
     }
 
     public Vec3 getSlingshotModelOffset(){
-        if (this == ModItems.TERENCE_BIRD.get()){
+        if (this == ModItems.BIG_LEMON.get()){
             return new Vec3(0, -1, -1);
         }
 
-        if (this == ModItems.BOMB_BIRD.get()){
+        if (this == ModItems.BOMB_LEMON.get()){
             return new Vec3(0, -0.5, -0.5);
         }
 

@@ -2,7 +2,7 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "lemonbirds:item/matilda_egg"
+		"1": "lemonbirds:item/lemon_egg"
 	},
 	"elements": [
 		{

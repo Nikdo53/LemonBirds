@@ -5,9 +5,9 @@
 	"gui_light": "front",
 	"loader": "neoforge:obj",
 	"flip_v": true,
-	"model": "lemonbirds:models/item/bomb_bird.obj",
+	"model": "lemonbirds:models/item/bomb_lemon.obj",
 	"textures": {
-		"texture0": "lemonbirds:item/bomb_bird",
+		"texture0": "lemonbirds:item/bomb_lemon",
 		"particle": "lemonbirds:block/empty"
 
 	},

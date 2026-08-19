@@ -78,7 +78,7 @@ public class BombBirdRenderer<T extends BombLemonBirdEntity & ItemSupplier> exte
             poseStack.scale(1.01f, 1.01f, 1.01f);
             this.itemRenderer
                     .renderStatic(
-                            ModItems.BOMB_BIRD_ORANGE.get().getDefaultInstance(),
+                            ModItems.BOMB_LEMON_ORANGE.get().getDefaultInstance(),
                             ItemDisplayContext.GROUND,
                             packedLight,
                             OverlayTexture.NO_OVERLAY,

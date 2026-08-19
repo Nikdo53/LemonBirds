@@ -2,9 +2,6 @@ package net.nikdo53.lemonbirds;
 
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -62,8 +59,8 @@ public class LemonBirdsClient {
 
 
         event.registerSpriteSet(ModParticles.FEATHER_BLUE.get(), BirdTrailParticle.Provider::createFeather);
-        event.registerSpriteSet(ModParticles.FEATHER_MATILDA.get(), BirdTrailParticle.Provider::createFeather);
-        event.registerSpriteSet(ModParticles.FEATHER_TERENCE.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_WHITE.get(), BirdTrailParticle.Provider::createFeather);
+        event.registerSpriteSet(ModParticles.FEATHER_BIG.get(), BirdTrailParticle.Provider::createFeather);
         event.registerSpriteSet(ModParticles.FEATHER_YELLOW.get(), BirdTrailParticle.Provider::createFeather);
         event.registerSpriteSet(ModParticles.FEATHER_RED.get(), BirdTrailParticle.Provider::createFeather);
         event.registerSpriteSet(ModParticles.FEATHER_BOMB.get(), BirdTrailParticle.Provider::createFeather);

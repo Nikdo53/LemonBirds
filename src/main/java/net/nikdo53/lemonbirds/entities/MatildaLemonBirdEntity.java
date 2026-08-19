@@ -76,6 +76,6 @@ public class MatildaLemonBirdEntity extends AbstractLemonBirdEntity{
 
     @Override
     protected Item getDefaultItem() {
-        return ModItems.MATILDA_BIRD.get();
+        return ModItems.WHITE_LEMON.get();
     }
 }

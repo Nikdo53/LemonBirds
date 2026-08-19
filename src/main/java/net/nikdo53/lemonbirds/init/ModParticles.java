@@ -5,7 +5,6 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.nikdo53.lemonbirds.LemonBirds;
-import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 
 import java.util.function.Supplier;
 
@@ -20,8 +19,8 @@ public interface ModParticles {
     Supplier<SimpleParticleType> FEATHER_BLUE = PARTICLES.register("feather_blue", () -> new SimpleParticleType(false));
     Supplier<SimpleParticleType> FEATHER_YELLOW = PARTICLES.register("feather_yellow", () -> new SimpleParticleType(false));
     Supplier<SimpleParticleType> FEATHER_BOMB = PARTICLES.register("feather_bomb", () -> new SimpleParticleType(false));
-    Supplier<SimpleParticleType> FEATHER_MATILDA = PARTICLES.register("feather_matilda", () -> new SimpleParticleType(false));
-    Supplier<SimpleParticleType> FEATHER_TERENCE = PARTICLES.register("feather_terence", () -> new SimpleParticleType(false));
+    Supplier<SimpleParticleType> FEATHER_WHITE = PARTICLES.register("feather_white", () -> new SimpleParticleType(false));
+    Supplier<SimpleParticleType> FEATHER_BIG = PARTICLES.register("feather_big", () -> new SimpleParticleType(false));
 
     Supplier<SimpleParticleType> PIG_BLOB = PARTICLES.register("pig_blob", () -> new SimpleParticleType(false));
 

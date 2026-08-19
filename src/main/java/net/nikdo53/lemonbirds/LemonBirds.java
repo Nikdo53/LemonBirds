@@ -3,7 +3,6 @@ package net.nikdo53.lemonbirds;
 import net.mcexpanded.fancytabsections.FancyTabSections;
 import net.mcexpanded.fancytabsections.Section.SectionColored;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.nikdo53.lemonbirds.init.*;
 import org.slf4j.Logger;
 
@@ -12,9 +11,6 @@ import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod(LemonBirds.MOD_ID)
 public class LemonBirds {
@@ -33,12 +29,12 @@ public class LemonBirds {
 
         FancyTabSections.addSection(loc("lemonbirds_tab"),
                 new SectionColored(loc("birds"))
-                        .add(ModItems.RED_BIRD)
-                        .add(ModItems.BOMB_BIRD)
-                        .add(ModItems.YELLOW_BIRD)
-                        .add(ModItems.BLUE_BIRD)
-                        .add(ModItems.MATILDA_BIRD)
-                        .add(ModItems.TERENCE_BIRD)
+                        .add(ModItems.RED_LEMON)
+                        .add(ModItems.BOMB_LEMON)
+                        .add(ModItems.YELLOW_LEMON)
+                        .add(ModItems.BLUE_LEMON)
+                        .add(ModItems.WHITE_LEMON)
+                        .add(ModItems.BIG_LEMON)
                         .setBannerColor(0xFFFF0000)
         );
 
@@ -46,7 +42,7 @@ public class LemonBirds {
                 new SectionColored(loc("misc"))
                         .add(ModBlocks.SLING_SHOT)
                         .add(ModBlocks.LEMON_TNT)
-                        .add(ModItems.MATILDA_EGG)
+                        .add(ModItems.LEMON_EGG)
                         .setBannerColor(0xFF333333)
         );
 

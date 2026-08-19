@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=east": {
-      "model": "lemonbirds:item/red_bird",
+      "model": "lemonbirds:item/blue_lemon",
       "y": 90
     },
     "facing=north": {
-      "model": "lemonbirds:item/red_bird"
+      "model": "lemonbirds:item/blue_lemon"
     },
     "facing=south": {
-      "model": "lemonbirds:item/red_bird",
+      "model": "lemonbirds:item/blue_lemon",
       "y": 180
     },
     "facing=west": {
-      "model": "lemonbirds:item/red_bird",
+      "model": "lemonbirds:item/blue_lemon",
       "y": 270
     }
   }

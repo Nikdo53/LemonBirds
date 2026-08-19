@@ -5,10 +5,10 @@
 	"gui_light": "front",
 	"loader": "neoforge:obj",
 	"flip_v": true,
-	"model": "lemonbirds:models/item/bomb_bird_orange.obj",
+	"model": "lemonbirds:models/item/bomb_lemon_orange.obj",
 	"textures": {
-		"texture0": "lemonbirds:item/bomb_bird_orange",
-		"particle": "lemonbirds:item/bomb_bird_orange"
+		"texture0": "lemonbirds:item/bomb_lemon_orange",
+		"particle": "lemonbirds:item/bomb_lemon_orange"
 
 	},
 	"display": {

@@ -153,7 +153,7 @@ sourceSets.main.resources {
             }
         }
 
-/*
+
         implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
         implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
         compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
@@ -161,12 +161,12 @@ sourceSets.main.resources {
         implementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
         implementation "curse.maven:explosive-enhancement-reforged-1036246:6520579"
-*/
+
         jarJar(implementation("net.nikdo53.tinymultiblocklib:tiny-multiblock-lib-neoforge-1.21.1:4.0.0"))
 
         jarJar(implementation("maven.modrinth:fancytabsections:6.1-NEOFORGE-1.21.1"))
 
-        //  implementation "maven.modrinth:oWaK0Q19:w7zlLnea"
+         implementation "maven.modrinth:oWaK0Q19:w7zlLnea"
     }
 
     var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

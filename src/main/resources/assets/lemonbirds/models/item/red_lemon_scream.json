@@ -4,8 +4,8 @@
 	"render_type": "cutout_mipped",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "lemonbirds:item/red_bird_scream",
-		"particle": "lemonbirds:item/red_bird_scream"
+		"1": "lemonbirds:item/red_lemon_scream",
+		"particle": "lemonbirds:item/red_lemon_scream"
 	},
 	"elements": [
 		{

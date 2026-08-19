@@ -62,7 +62,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return ModItems.RED_BIRD.asItem();
+        return ModItems.RED_LEMON.asItem();
     }
 
     @Override

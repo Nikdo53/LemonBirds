@@ -3,9 +3,9 @@
 	"gui_light": "front",
 	"loader": "neoforge:obj",
 	"flip_v": true,
-	"model": "lemonbirds:models/item/yellow_bird.obj",
+	"model": "lemonbirds:models/item/yellow_lemon.obj",
 	"textures": {
-		"texture0": "lemonbirds:item/yellow_bird",
+		"texture0": "lemonbirds:item/yellow_lemon",
 		"particle": "lemonbirds:block/empty"
 	},
 

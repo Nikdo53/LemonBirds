@@ -1,9 +1,7 @@
 package net.nikdo53.lemonbirds.entities;
 
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -27,7 +25,7 @@ public class MatildaEggProjectile extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return ModItems.MATILDA_EGG.asItem();
+        return ModItems.LEMON_EGG.asItem();
     }
 
     @Override
