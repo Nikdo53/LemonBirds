@@ -186,7 +186,9 @@ public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevel
                 ModBlocks.FOREMAN_PIG_BOSS, 13.0,
                 ModBlocks.CHEF_PIG_BOSS, 12.0,
                 ModBlocks.CORPORAL_PIG, 8.0,
-                ModBlocks.BAD_PIG, 6.0
+                ModBlocks.BAD_PIG, 6.0,
+                ModBlocks.BUILDER_BAD_PIG, 7.0
+
         );
 
         public double getTriggerVelocity(BlockState state) {

@@ -49,6 +49,7 @@ public class LemonBirds {
         FancyTabSections.addSection(loc("lemonbirds_tab"),
                 new SectionColored(loc("pigs"))
                         .add(ModBlocks.BAD_PIG)
+                        .add(ModBlocks.BUILDER_BAD_PIG)
                         .add(ModBlocks.CORPORAL_PIG)
                         .add(ModBlocks.FOREMAN_PIG_BOSS)
                         .add(ModBlocks.CHEF_PIG_BOSS)

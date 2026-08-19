@@ -31,6 +31,7 @@ public interface ModBlocks {
     DeferredBlock<Block> SLING_SHOT = registerWithItem("bird_sling_shot", () -> new BirdSlingshotBlock(BlockBehaviour.Properties.of().noOcclusion()));
 
     DeferredBlock<Block> BAD_PIG = registerSableItem("bad_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.ONE_BLOCK));
+    DeferredBlock<Block> BUILDER_BAD_PIG = registerSableItem("builder_bad_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.ONE_BLOCK));
     DeferredBlock<Block> CORPORAL_PIG = registerSableItem("corporal_pig", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.ONE_BLOCK));
     DeferredBlock<Block> FOREMAN_PIG_BOSS = registerSableItem("foreman_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.FOREMAN_SHAPE));
     DeferredBlock<Block> CHEF_PIG_BOSS = registerSableItem("chef_pig_boss", () -> new BadPigBlock(BlockBehaviour.Properties.of().noOcclusion().emissiveRendering(ModBlocks::always), BadPigBlock.CHEF_SHAPE));
