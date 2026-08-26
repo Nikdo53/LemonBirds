@@ -30,10 +30,7 @@ import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.entities.DummyEntity;
 import net.nikdo53.lemonbirds.entities.DummyProjectile;
-import net.nikdo53.lemonbirds.init.ModBlockEntities;
-import net.nikdo53.lemonbirds.init.ModBlocks;
-import net.nikdo53.lemonbirds.init.ModDataAttachments;
-import net.nikdo53.lemonbirds.init.ModKeyBinds;
+import net.nikdo53.lemonbirds.init.*;
 import net.nikdo53.lemonbirds.items.BirdItem;
 import net.nikdo53.lemonbirds.network.SlingshotRotationPayload;
 import net.nikdo53.lemonbirds.network.SlingshotRotationSyncPayload;
@@ -331,7 +328,7 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         Vec3 direction = getShootDirection(1);
 
         float velocity = hasBirdItem() ? birdItem.getFlyingSpeed() : 1.0F;
-        projectile.shoot(direction.x(), direction.y(), direction.z(), velocity * pull /3f + 0.5f, 0.1f);
+        projectile.shoot(direction.x(), direction.y(), direction.z(), (float) ((velocity * pull /3f + 0.5f) * ModServerConfig.SLINGSHOT_RANGE_MULTIPLIER.getAsDouble()), 0.1f);
         projectile.moveTo(getPouchPosition(1));
         getLevel().addFreshEntity(projectile);
 

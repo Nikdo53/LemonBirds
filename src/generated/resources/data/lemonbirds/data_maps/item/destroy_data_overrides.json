@@ -1,0 +1,9 @@
+{
+  "values": {
+    "lemonbirds:bomb_lemon": {
+      "#lemonbirds:lemon_birds_glass": 0.7,
+      "minecraft:obsidian": 0.1,
+      "minecraft:slime_block": 0.9
+    }
+  }
+}

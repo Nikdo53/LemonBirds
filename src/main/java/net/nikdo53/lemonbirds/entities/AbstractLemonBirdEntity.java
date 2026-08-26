@@ -1,14 +1,20 @@
 package net.nikdo53.lemonbirds.entities;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.UnboundedMapCodec;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.sublevel.ServerSubLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +24,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import net.nikdo53.lemonbirds.blocks.BadPigBlock;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
@@ -28,10 +35,7 @@ import net.nikdo53.lemonbirds.util.LemonUtils;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Boolean> DATA_HAS_ABILITY = SynchedEntityData.defineId(
@@ -165,7 +169,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         Vec3 location = result.getLocation();
         Vec3 normal = location.subtract(pos.getX(), pos.getY(), pos.getZ()).subtract(0.5, 0.5, 0.5).multiply(-1, -1, -1);
 
-        Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, level.getBlockState(pos));
+        Vec3 movement = getDestroyEffectivity().applyMovementPostHit(this, birdItem, level.getBlockState(pos));
         double speed = 10.0 * movement.lengthSqr();
         double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed() / 2);
 
@@ -278,7 +282,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
     }
 
     public record DestroyEffectivity(double wood, double stone, double glass, double hay, boolean canDestroy) {
-        public double getForBlock(BlockState block){
+        public double getForBlock(Item item, BlockState block){
+            Double fromItem = getFromItem(item, block);
+            if (fromItem != null) return fromItem;
+
             if (block.is(ModBlockTags.LEMON_BIRDS_STONE)){
                 return stone;
             } else if (block.is(ModBlockTags.LEMON_BIRDS_WOOD)){
@@ -291,12 +298,34 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
             return 0;
         }
 
+        private static @Nullable Double getFromItem(Item item, BlockState block) {
+            Map<Either<TagKey<Block>, Block>, Double> map = item.builtInRegistryHolder().getData(ModDataMaps.BIRD_DESTROY_DATA);
+            if (map != null) {
+                Optional<Either<TagKey<Block>, Block>> any = map.keySet().stream().filter(either -> {
+                    if (either.left().isPresent()) {
+                        return block.is(either.left().get());
+                    } else if (either.right().isPresent()){
+                        return block.is(either.right().get());
+                    }
+                    return false;
+                }).findAny();
+
+                if (any.isPresent()) {
+                    return map.get(any.get());
+                }
+            }
+            return null;
+        }
+
         public DestroyEffectivity(double wood, double stone, double glass, double hay) {
             this(wood, stone, glass, hay, true);
         }
 
-        public Vec3 applyMovementPostHit(Entity entity, BlockState state){
-            return entity.getDeltaMovement().scale(getForBlock(state));
+        public Vec3 applyMovementPostHit(Entity entity, Item item, BlockState state){
+            return entity.getDeltaMovement().scale(getForBlock(item, state));
         }
     }
+
+    public static final UnboundedMapCodec<Either<TagKey<Block>, Block>, Double> DESTROY_EFFECTIVITY_CODEC =
+            Codec.unboundedMap(Codec.either(TagKey.hashedCodec(Registries.BLOCK), BuiltInRegistries.BLOCK.byNameCodec()), Codec.DOUBLE);
 }

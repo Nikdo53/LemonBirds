@@ -11,8 +11,10 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import net.neoforged.neoforge.registries.datamaps.RegisterDataMapTypesEvent;
 import net.nikdo53.lemonbirds.LemonBirds;
 import net.nikdo53.lemonbirds.blocks.BirdSlingshotBlockEntity;
+import net.nikdo53.lemonbirds.init.ModDataMaps;
 import net.nikdo53.lemonbirds.network.ActivateLemonBirdPayload;
 import net.nikdo53.lemonbirds.network.SlingshotRotationPayload;
 import net.nikdo53.lemonbirds.network.SlingshotRotationSyncPayload;
@@ -73,6 +75,11 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onAttackEntity(AttackEntityEvent event) {
         cancelWhileOnSlingshot(event.getEntity(), event);
+    }
+
+    @SubscribeEvent
+    public static void onAttackEntity(RegisterDataMapTypesEvent event) {
+        event.register(ModDataMaps.BIRD_DESTROY_DATA);
     }
 
     @SubscribeEvent

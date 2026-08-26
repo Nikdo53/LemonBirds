@@ -3,6 +3,7 @@ package net.nikdo53.lemonbirds;
 import net.mcexpanded.fancytabsections.FancyTabSections;
 import net.mcexpanded.fancytabsections.Section.SectionColored;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.config.ModConfig;
 import net.nikdo53.lemonbirds.init.*;
 import org.slf4j.Logger;
 
@@ -26,6 +27,7 @@ public class LemonBirds {
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
 
+        modContainer.registerConfig(ModConfig.Type.SERVER, ModServerConfig.SERVER_CONFIG);
 
         FancyTabSections.addSection(loc("lemonbirds_tab"),
                 new SectionColored(loc("birds"))

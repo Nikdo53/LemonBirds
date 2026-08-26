@@ -7,6 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.nikdo53.lemonbirds.LemonBirds;
+import org.lwjgl.system.macosx.CGEventTapCallBack;
 
 @EventBusSubscriber(modid = LemonBirds.MOD_ID)
 public class ModDataGen {
@@ -17,6 +18,7 @@ public class ModDataGen {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
 
         gen.addProvider(event.includeServer(), new ModBlockTagsProvider(output, event.getLookupProvider(), existingFileHelper));
+        gen.addProvider(event.includeServer(), new ModDataMapProvider(output, event.getLookupProvider()));
 
     }
 
