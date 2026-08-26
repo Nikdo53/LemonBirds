@@ -48,7 +48,7 @@ public class FallingBirdBlockEntity extends AbstractMultiBlockEntity {
         // Not getFullBlockShapeCache() - inside a sub-level plot nothing ever triggers the neighbour updates
         // that fill the cache, so it can still be empty here and the blocks would never despawn.
         Set<BlockPos> shape = state.getBlock() instanceof IMultiBlock multiBlock
-                ? multiBlock.getFullBlockShape(level, pos, state).getGlobalPositions()
+                ? multiBlock.getMultiblockShape(level, pos, state).getGlobalPositions()
                 : Set.of(pos);
 
         for (BlockPos blockPos : shape) {

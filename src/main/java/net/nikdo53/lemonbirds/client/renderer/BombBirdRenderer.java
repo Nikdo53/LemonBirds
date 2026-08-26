@@ -17,8 +17,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.nikdocolor.NikdoColor;
 import net.nikdo53.tinymultiblocklib.client.TintedBufferSource;
-import net.nikdo53.tinymultiblocklib.color.NikdoColor;
 
 public class BombBirdRenderer<T extends BombLemonBirdEntity & ItemSupplier> extends EntityRenderer<T> {
     private final ItemRenderer itemRenderer;

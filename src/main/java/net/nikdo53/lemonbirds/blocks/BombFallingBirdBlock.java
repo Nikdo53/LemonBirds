@@ -2,8 +2,8 @@ package net.nikdo53.lemonbirds.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class BombFallingBirdBlock extends FallingBirdBlock{
@@ -12,7 +12,7 @@ public class BombFallingBirdBlock extends FallingBirdBlock{
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable AbstractMultiBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BombFallingBirdBlockEntity(pos, state);
     }
 

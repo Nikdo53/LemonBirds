@@ -15,8 +15,8 @@ import net.nikdo53.lemonbirds.blocks.BombFallingBirdBlockEntity;
 import net.nikdo53.lemonbirds.blocks.FallingBirdBlock;
 import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.nikdocolor.NikdoColor;
 import net.nikdo53.tinymultiblocklib.client.TintedBufferSource;
-import net.nikdo53.tinymultiblocklib.color.NikdoColor;
 
 public class BombBlockRenderer<T extends BombFallingBirdBlockEntity> implements BlockEntityRenderer<T> {
     public BombBlockRenderer(BlockEntityRendererProvider.Context context) {

@@ -31,7 +31,7 @@ public class SublevelBlockItem extends BlockItem {
                 BlockPos pos = context.getClickedPos();
                 if (state == null) return InteractionResult.FAIL;
 
-                Set<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(context.getLevel(), null, pos, state).getGlobalPositions();
+                Set<BlockPos> shape = multiBlock.getMultiblockShapeNoCache(pos, state, context.getLevel(), null).getGlobalPositions();
 
                 LateTickOperation.schedule(serverLevel, 2, (level) ->
                         LemonUtils.assembleIntoSubLevel(level, getBlock(), pos, shape, this.builtInRegistryHolder().getRegisteredName(), null, null));

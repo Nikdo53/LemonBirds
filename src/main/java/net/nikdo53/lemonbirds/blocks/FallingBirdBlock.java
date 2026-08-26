@@ -20,6 +20,7 @@ import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
+import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class FallingBirdBlock extends AbstractMultiBlock {
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable AbstractMultiBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new FallingBirdBlockEntity(pos, state);
     }
 

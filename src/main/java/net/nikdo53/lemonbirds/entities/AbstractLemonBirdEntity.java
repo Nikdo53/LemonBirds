@@ -208,7 +208,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         }
         // Only leave a block behind when the bird is actually gone for good, not when it's unloaded or moved between
         // dimensions - otherwise a chunk unload duplicates the block.
-        if (reason.shouldDestroy()) {
+        if (reason.shouldDestroy() && !isRemoved()) {
             turnIntoBlock();
         }
 
@@ -264,7 +264,7 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
                 .setValue(FallingBirdBlock.FACING, Direction.SOUTH);
 
         BlockPos pos = blockPosition();
-        Set<BlockPos> shape = multiBlock.getFullBlockShapeNoCache(serverLevel, null, pos, state).getGlobalPositions();
+        Set<BlockPos> shape = multiBlock.getMultiblockShapeNoCache(pos, state, serverLevel, null).getGlobalPositions();
 
         serverLevel.setBlock(pos, state, 3);
 
