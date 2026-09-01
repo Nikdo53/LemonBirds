@@ -174,7 +174,9 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed() / 2);
 
         if (level.getBlockState(pos).getBlock() instanceof BadPigBlock pigBlock && level instanceof ServerLevel serverLevel){
-            pigBlock.sable$getCallback().onHitWithVelocity(serverLevel, pos, level.getBlockState(pos), getDeltaMovement().lengthSqr() * 5);
+            if (getDestroyEffectivity().canDestroy){
+                pigBlock.sable$getCallback().onHitWithVelocity(serverLevel, pos, level.getBlockState(pos), getDeltaMovement().lengthSqr() * 5);
+            }
         }
 
         this.setDeltaMovement(movement);
@@ -313,6 +315,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
                 if (any.isPresent()) {
                     return map.get(any.get());
                 }
+            }
+
+            if (block.is(ModBlockTags.BAD_PIGS)){
+                return 0.75;
             }
             return null;
         }

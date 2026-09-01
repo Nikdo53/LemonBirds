@@ -53,5 +53,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         tag(ModBlockTags.BIRD_BREAKABLE).addTags(ModBlockTags.LEMON_BIRDS_WOOD, ModBlockTags.LEMON_BIRDS_STONE, ModBlockTags.LEMON_BIRDS_GLASS, ModBlockTags.LEMON_BIRDS_HAY);
 
         tag(BOUNCY).addTags(ModBlockTags.LEMON_BIRD);
+        tag(ModBlockTags.BAD_PIGS).add(ModBlocks.BAD_PIG.get(), ModBlocks.BUILDER_BAD_PIG.get(), ModBlocks.CORPORAL_PIG.get(),
+                ModBlocks.KING_PIG_BOSS.get(), ModBlocks.FOREMAN_PIG_BOSS.get(), ModBlocks.CHEF_PIG_BOSS.get());
     }
 }

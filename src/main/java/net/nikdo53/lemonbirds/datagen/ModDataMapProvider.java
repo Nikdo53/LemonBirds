@@ -26,6 +26,13 @@ public class ModDataMapProvider extends DataMapProvider {
                                 Either.right(Blocks.OBSIDIAN), 0.1,
                                 Either.right(Blocks.SLIME_BLOCK), 0.9,
                                 Either.left(ModBlockTags.LEMON_BIRDS_GLASS), 0.7
+                        ), false)
+                .add(ModItems.RED_SCREAM,
+                        Map.of(
+                                Either.left(ModBlockTags.BAD_PIGS), 0.15
                         ), false);
+
+        this.builder(ModDataMaps.FRAGILE_OVERRIDES)
+                .add(ModBlockTags.LEMON_BIRDS_WOOD, 14.0, false);
     }
 }

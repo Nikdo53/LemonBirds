@@ -29,6 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
 import net.nikdo53.lemonbirds.init.ModDataAttachments;
 import net.nikdo53.lemonbirds.init.ModItems;
+import net.nikdo53.lemonbirds.init.ModServerConfig;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -80,6 +81,8 @@ public class BirdItem extends Item implements ProjectileItem {
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        if (!ModServerConfig.SHOOT_FROM_HAND.get()) return InteractionResultHolder.pass(player.getItemInHand(hand));
+
         ItemStack itemstack = player.getItemInHand(hand);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PARROT_FLY, SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!level.isClientSide) {

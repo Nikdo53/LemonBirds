@@ -80,6 +80,7 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onAttackEntity(RegisterDataMapTypesEvent event) {
         event.register(ModDataMaps.BIRD_DESTROY_DATA);
+        event.register(ModDataMaps.FRAGILE_OVERRIDES);
     }
 
     @SubscribeEvent
