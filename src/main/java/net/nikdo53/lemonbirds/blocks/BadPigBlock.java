@@ -13,6 +13,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,6 +27,7 @@ import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModParticles;
 import net.nikdo53.lemonbirds.util.LateTickOperation;
 import net.nikdo53.tinymultiblocklib.block.AbstractMultiBlock;
+import net.nikdo53.tinymultiblocklib.blockentities.AbstractMultiBlockEntity;
 import net.nikdo53.tinymultiblocklib.components.SharedStatePropertiesBuilder;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
@@ -36,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevelCollisionCallback {
+public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevelCollisionCallback, EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty DAMAGE = IntegerProperty.create("damage", 0, 2);
     public static final Callback CALLBACK = new Callback();
@@ -73,6 +75,11 @@ public class BadPigBlock extends AbstractMultiBlock implements BlockWithSubLevel
     public void createSharedBlockStates(SharedStatePropertiesBuilder builder) {
         super.createSharedBlockStates(builder);
         builder.add(DAMAGE);
+    }
+
+    @Override
+    public @Nullable AbstractMultiBlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BadPigBlockEntity(pos, state);
     }
 
     @Override

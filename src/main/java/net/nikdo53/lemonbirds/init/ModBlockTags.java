@@ -16,6 +16,7 @@ public interface ModBlockTags {
 
     TagKey<Block> LEMON_BIRD = TagKey.create(Registries.BLOCK, LemonBirds.loc("lemon_bird"));
     TagKey<Block> BAD_PIGS = TagKey.create(Registries.BLOCK, LemonBirds.loc("bad_pig"));
+    TagKey<Block> BAD_PIG_BOSS = TagKey.create(Registries.BLOCK, LemonBirds.loc("bad_pig_boss"));
 
 
 

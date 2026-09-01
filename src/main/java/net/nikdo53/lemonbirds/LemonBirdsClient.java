@@ -7,6 +7,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -24,6 +25,7 @@ import net.nikdo53.lemonbirds.particle.BirdTrailParticle;
 public class LemonBirdsClient {
     public LemonBirdsClient(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        container.registerConfig(ModConfig.Type.CLIENT, ModClientConfig.CLIENT);
     }
 
     @SubscribeEvent
@@ -50,6 +52,8 @@ public class LemonBirdsClient {
 
         event.registerBlockEntityRenderer(ModBlockEntities.SLING_SHOT.get(), SlingshotRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.FALLING_BIRD_BOMB.get(), BombBlockRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.BAD_PIG.get(), BadPigRenderer::new);
+
 
     }
 

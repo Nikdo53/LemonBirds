@@ -34,6 +34,10 @@
   "lemonbirds.configuration.slingshot_range_multiplier.tooltip": "Multiplier for the range of the Bird Slingshot",
 
   "lemonbirds.configuration.shoot_from_hand": "Shoot From Hand",
-  "lemonbirds.configuration.shoot_from_hand.tooltip": "Allow shooting birds from the hand instead of just the slingshot"
+  "lemonbirds.configuration.shoot_from_hand.tooltip": "Allow shooting birds from the hand instead of just the slingshot",
+
+  "lemonbirds.configuration.show_pig_outlines": "Show Pig Highlights",
+  "lemonbirds.configuration.show_pig_outlines.tooltip": "Shows Highlights around pigs when in hand "
+
 
 }
