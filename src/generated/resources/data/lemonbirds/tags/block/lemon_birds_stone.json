@@ -1,7 +1,5 @@
 {
   "values": [
-    "#minecraft:base_stone_overworld",
-    "#minecraft:stone_bricks",
-    "#c:cobblestones"
+    "#minecraft:mineable/pickaxe"
   ]
 }

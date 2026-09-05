@@ -9,17 +9,10 @@ import net.minecraft.client.renderer.OutlineBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.projectile.ItemSupplier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nikdo53.lemonbirds.blocks.BadPigBlockEntity;
-import net.nikdo53.lemonbirds.blocks.BombFallingBirdBlockEntity;
-import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
-import net.nikdo53.lemonbirds.init.ModBlockEntities;
 import net.nikdo53.lemonbirds.init.ModBlockTags;
 import net.nikdo53.lemonbirds.init.ModClientConfig;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
@@ -49,5 +42,10 @@ public class BadPigRenderer <T extends BadPigBlockEntity> implements BlockEntity
         VertexConsumer vertexConsumer = outlineBufferSource.getBuffer(RenderType.translucent());
 
         minecraft.getBlockRenderer().renderBatched(blockState, blockEntity.getBlockPos(), blockEntity.getLevel(), poseStack, vertexConsumer, true, blockEntity.getLevel().random);
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 256;
     }
 }

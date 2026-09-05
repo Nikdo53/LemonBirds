@@ -73,4 +73,9 @@ public class BombBlockRenderer<T extends BombFallingBirdBlockEntity> implements 
     public AABB getRenderBoundingBox(T blockEntity) {
         return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity).inflate(2);
     }
+
+    @Override
+    public int getViewDistance() {
+        return 256;
+    }
 }

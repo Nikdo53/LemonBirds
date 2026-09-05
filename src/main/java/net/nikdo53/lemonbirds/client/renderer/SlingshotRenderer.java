@@ -149,4 +149,9 @@ public class SlingshotRenderer implements BlockEntityRenderer<BirdSlingshotBlock
 
         poseStack.popPose();
     }
+
+    @Override
+    public int getViewDistance() {
+        return 256;
+    }
 }

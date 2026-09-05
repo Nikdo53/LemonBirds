@@ -1,5 +1,8 @@
 {
   "values": {
-    "#lemonbirds:lemon_birds_wood": 14.0
+    "#lemonbirds:lemon_birds_glass": 6.0,
+    "#lemonbirds:lemon_birds_hay": 8.0,
+    "#lemonbirds:lemon_birds_stone": 18.0,
+    "#lemonbirds:lemon_birds_wood": 12.0
   }
 }

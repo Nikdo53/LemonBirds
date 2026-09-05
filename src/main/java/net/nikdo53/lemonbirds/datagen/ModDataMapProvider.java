@@ -33,6 +33,9 @@ public class ModDataMapProvider extends DataMapProvider {
                         ), false);
 
         this.builder(ModDataMaps.FRAGILE_OVERRIDES)
-                .add(ModBlockTags.LEMON_BIRDS_WOOD, 14.0, false);
+                .add(ModBlockTags.LEMON_BIRDS_GLASS, 6.0, false)
+                .add(ModBlockTags.LEMON_BIRDS_HAY, 8.0, false)
+                .add(ModBlockTags.LEMON_BIRDS_WOOD, 12.0, false)
+                .add(ModBlockTags.LEMON_BIRDS_STONE, 18.0, false);
     }
 }

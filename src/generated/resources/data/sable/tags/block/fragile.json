@@ -1,6 +1,8 @@
 {
   "values": [
     "#lemonbirds:lemon_birds_wood",
-    "#lemonbirds:lemon_birds_glass"
+    "#lemonbirds:lemon_birds_glass",
+    "#lemonbirds:lemon_birds_stone",
+    "#lemonbirds:lemon_birds_hay"
   ]
 }

@@ -39,10 +39,10 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     @Override
     @SuppressWarnings("unchecked")
     protected void addTags(HolderLookup.Provider provider) {
-       tag(FRAGILE).addTags(ModBlockTags.LEMON_BIRDS_WOOD, ModBlockTags.LEMON_BIRDS_GLASS);
+       tag(FRAGILE).addTags(ModBlockTags.LEMON_BIRDS_WOOD, ModBlockTags.LEMON_BIRDS_GLASS, ModBlockTags.LEMON_BIRDS_STONE, ModBlockTags.LEMON_BIRDS_HAY);
 
        tag(ModBlockTags.LEMON_BIRDS_WOOD).addTags(BlockTags.MINEABLE_WITH_AXE);
-       tag(ModBlockTags.LEMON_BIRDS_STONE).addTags(BlockTags.BASE_STONE_OVERWORLD, BlockTags.STONE_BRICKS, Tags.Blocks.COBBLESTONES);
+       tag(ModBlockTags.LEMON_BIRDS_STONE).addTags(BlockTags.MINEABLE_WITH_PICKAXE);
        tag(ModBlockTags.LEMON_BIRDS_GLASS).addTags(Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.GLASS_PANES);
        tag(ModBlockTags.LEMON_BIRDS_HAY).addTag(BlockTags.WOOL).add(Blocks.HAY_BLOCK).addTag(BlockTags.LEAVES).add(Blocks.TNT).add(ModBlocks.LEMON_TNT.get());
 

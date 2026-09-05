@@ -100,4 +100,5 @@ public class BombBirdRenderer<T extends BombLemonBirdEntity & ItemSupplier> exte
     public ResourceLocation getTextureLocation(T entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
+
 }
