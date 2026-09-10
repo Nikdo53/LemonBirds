@@ -110,15 +110,7 @@ public class ClientEvents {
         }
 
     }
-
-    /**
-     * The rotation the camera is currently looking along, as {@code (xRot, yRot)}.
-     * <p>
-     * Camera#setup takes the camera entity's {@code getViewXRot}/{@code getViewYRot}, not its {@code xRot}/{@code
-     * yRot} fields, so those are what an ability has to be aimed with. The fields only happen to agree while the
-     * player is the camera entity; once something else is - a bird launched from a slingshot, say - they are a tick
-     * behind and network synced, and the ability ends up aimed somewhere the player never looked.
-     */
+    
     private static Vec2 getCameraRotation(Minecraft minecraft) {
         Entity cameraEntity = minecraft.getCameraEntity() != null ? minecraft.getCameraEntity() : minecraft.player;
         float partialTick = minecraft.getTimer().getGameTimeDeltaPartialTick(false);
@@ -133,13 +125,6 @@ public class ClientEvents {
         }
     }
 
-    /**
-     * Stops attack and use from ever leaving the client while a player is aiming a slingshot.
-     * <p>
-     * {@link net.nikdo53.lemonbirds.events.ServerEvents} turns the interactions themselves down, but only this
-     * catches them early enough that the arm never swings and the block never flickers as the server puts it back.
-     * Pick block is left alone - it takes nothing and changes nothing in the world.
-     */
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         LocalPlayer player = Minecraft.getInstance().player;

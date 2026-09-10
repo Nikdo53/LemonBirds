@@ -9,9 +9,14 @@ public interface ModServerConfig {
             .translation("lemonbirds.configuration.slingshot_range_multiplier")
             .defineInRange("slingshot_range_multiplier", 1.0d, 0.0d, 10.0d);
 
+    ModConfigSpec.DoubleValue SLINGSHOT_PITCH_MULTIPLIER = BUILDER
+            .translation("lemonbirds.configuration.slingshot_pitch_multiplier")
+            .defineInRange("slingshot_pitch_multiplier", 1.0d, 0.0d, 3.0d);
+
     ModConfigSpec.BooleanValue SHOOT_FROM_HAND = BUILDER
             .translation("lemonbirds.configuration.shoot_from_hand")
             .define("shoot_from_hand", true);
+
 
     ModConfigSpec SERVER_CONFIG = BUILDER.build();
 

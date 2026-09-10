@@ -13,8 +13,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ByIdMap;
@@ -27,7 +25,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.nikdo53.lemonbirds.entities.AbstractLemonBirdEntity;
-import net.nikdo53.lemonbirds.entities.BombLemonBirdEntity;
 import net.nikdo53.lemonbirds.entities.DummyEntity;
 import net.nikdo53.lemonbirds.entities.DummyProjectile;
 import net.nikdo53.lemonbirds.init.*;
@@ -50,9 +47,8 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
 
     public static final float MAX_YAW = 720;
     public static final float MAX_PULL = 4.0F;
-    public static final float MAX_PITCH = 30;
+    public static final float DEFAULT_PITCH = 30;
 
-    /** What the aim keys are worth while the use key is held, for lining a shot up rather than swinging it around. */
     public static final float PRECISION_AIM_FACTOR = 0.1F;
 
     public BirdItem birdItem = null;
@@ -65,7 +61,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     public float pitchOld = 0;
     public float pullOld = 0;
 
-    /** Whether the aim moved since the last tick, so {@link #tick} knows whether the interpolation is still live. */
     private boolean aimMoved = false;
 
     public DummyEntity dummyEntity = null;
@@ -90,12 +85,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         return dummyEntity != null;
     }
 
-    /**
-     * Whether the player is stood at a slingshot aiming it, on either side.
-     * <p>
-     * The attachment is set on the server when control begins and synced from there, so this answers the same on
-     * both sides and the interaction handlers can be written once for the pair.
-     */
     public static boolean isControllingSlingshot(Player player){
         return player.getExistingDataOrNull(ModDataAttachments.SLINGSHOT) != null;
     }
@@ -123,8 +112,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
     }
 
     public void tick(Level level, BlockPos pos, BlockState state){
-         // Every block of the multiblock carries one of these, and only the centre one is aimed, rendered or holds
-         // the camera anchor. The other fourteen have nothing to do.
          if (!isCenter()) return;
 
          if (isBeingControlled() && level.getGameTime() % 40 == 0){
@@ -132,9 +119,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
              shoot(projectile);
          }
 
-         // Block entities tick after entities do, so the aim already holds whatever this tick's input or packet made
-         // of it and the old values are the tick behind that the renderer interpolates from. Once nothing is moving
-         // the two have to settle back together, or every frame would swing between them as the partial tick cycles.
          if (aimMoved) {
              aimMoved = false;
          } else {
@@ -207,16 +191,14 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         public static final StreamCodec<ByteBuf, Action> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Action::ordinal);
     }
 
-    /** @return whether the aim ended up anywhere new, so that a caller can skip telling anyone about a no-op. */
     public boolean updateRotation(float yaw, float pitch, float pull){
         float newYaw = Mth.clamp(yaw, -MAX_YAW, MAX_YAW);
-        float newPitch = Mth.clamp(pitch, -MAX_PITCH, MAX_PITCH);
+        float maxPitch = (float) (DEFAULT_PITCH * ModServerConfig.SLINGSHOT_PITCH_MULTIPLIER.get());
+        float newPitch = Mth.clamp(pitch, -maxPitch, maxPitch);
         float newPull = Mth.clamp(pull, 0, MAX_PULL);
 
         if (newYaw == this.yaw && newPitch == this.pitch && newPull == this.pull) return false;
 
-        // Keep where the aim was for the renderer to interpolate out of. Only the first move of a tick may do this -
-        // a second one would throw the tick's starting point away and flatten the interpolation into a step.
         if (!aimMoved) {
             this.yawOld = this.yaw;
             this.pitchOld = this.pitch;
@@ -228,8 +210,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         this.pitch = newPitch;
         this.pull = newPull;
 
-        // Nothing else tells the other players the slingshot is being aimed - the block entity is only resynced when
-        // a bird changes hands, and that is far too heavy to do every tick anyway.
         if (level instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(getBlockPos()),
                     new SlingshotRotationSyncPayload(getBlockPos(), this.yaw, this.pitch, this.pull));
@@ -245,14 +225,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
     }
 
-    /**
-     * Keeps the camera anchor on the pouch.
-     * <p>
-     * Has to run from the block entity tick and nowhere else. Entities stash their previous position at the top of
-     * their own tick, and block entities tick after all of them, so a position set here is one the camera can be
-     * interpolated up to over the tick. Setting it from the input handler instead left the dummy's own tick to come
-     * along afterwards and record the new position as the old one too, and the camera stepped at 20Hz.
-     */
     private void moveDummyToPouch(){
         DummyEntity entity = getDummyEntity(getLevel());
         if (entity == null) return;
@@ -277,12 +249,10 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         return toWorldSpace(getAimVec(partialTick).scale(getPouchDistance(partialTick)));
     }
 
-    /** How far the pouch hangs behind the fork tips: the slack in the bands plus whatever has been pulled on top of it. */
     public double getPouchDistance(float partialTick){
         return POUCH_REST_DISTANCE + getPull(partialTick);
     }
 
-    /** Direction the bird gets launched in, opposite to the way the pouch is pulled. */
     public Vec3 getShootDirection(float partialTick){
         return toWorldSpace(getAimVec(partialTick)).scale(-1);
     }
@@ -299,7 +269,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
        };
     }
 
-    /** Unit vector pointing backwards along the aim, in slingshot-local space. */
     public Vec3 getAimVec(float partialTick){
         double yawRad = Math.toRadians(getYaw(partialTick));
         double pitchRad = Math.toRadians(getPitch(partialTick));
@@ -405,8 +374,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
         }
 
         public static void onInput(BirdSlingshotBlockEntity blockEntity, Input input){
-            // The use key has nothing else to do here - a player on a slingshot cannot place or use anything - so it
-            // is free to mean "carefully" instead.
             float precision = Minecraft.getInstance().options.keyUse.isDown() ? PRECISION_AIM_FACTOR : 1.0f;
 
             float rotationSensitivity = 2.0f * precision;
@@ -437,8 +404,6 @@ public class BirdSlingshotBlockEntity extends AbstractMultiBlockEntity {
                 pull -= input.forwardImpulse * pullSensitivity;
             }
 
-            // This runs every tick the player is on the slingshot, whether or not they are touching anything, so
-            // only bother the server on the ticks the aim actually went somewhere.
             if (blockEntity.updateRotation(yaw, pitch, pull)) {
                 PacketDistributor.sendToServer(new SlingshotRotationPayload(yaw, pitch, pull));
             }
