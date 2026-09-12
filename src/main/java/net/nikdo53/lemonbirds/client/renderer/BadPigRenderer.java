@@ -13,8 +13,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 import net.nikdo53.lemonbirds.blocks.BadPigBlockEntity;
+import net.nikdo53.lemonbirds.blocks.LemonTntBlock;
 import net.nikdo53.lemonbirds.init.ModBlockTags;
+import net.nikdo53.lemonbirds.init.ModBlocks;
 import net.nikdo53.lemonbirds.init.ModClientConfig;
+import net.nikdo53.tinymultiblocklib.block.BaseMultiblock;
 import net.nikdo53.tinymultiblocklib.block.IMultiBlock;
 
 public class BadPigRenderer <T extends BadPigBlockEntity> implements BlockEntityRenderer<T> {
@@ -31,13 +34,24 @@ public class BadPigRenderer <T extends BadPigBlockEntity> implements BlockEntity
         Item item = player.getMainHandItem().getItem();
         if (!( item instanceof BlockItem blockItem)) return;
         BlockState blockState = blockEntity.getBlockState();
-        if (!blockState.is(blockItem.getBlock()) || !IMultiBlock.isCenter(blockState)) return;
+
+        if (!blockState.is(blockItem.getBlock())) return;
+        if (blockState.hasProperty(BaseMultiblock.CENTER)){
+            if (!blockState.getValue(BaseMultiblock.CENTER)) return;
+        }
 
         OutlineBufferSource outlineBufferSource = minecraft.renderBuffers().outlineBufferSource();
         if (blockState.is(ModBlockTags.BAD_PIG_BOSS)){
             outlineBufferSource.setColor(255, 207, 0, 100);
         } else {
             outlineBufferSource.setColor(47, 209, 16, 100);
+        }
+        if (blockState.is(ModBlocks.LEMON_TNT)){
+            if (blockState.getValue(LemonTntBlock.IS_PRIMED)) {
+                outlineBufferSource.setColor(255, 0, 0, 100);
+            } else {
+                outlineBufferSource.setColor(255, 100, 255, 100);
+            }
         }
         VertexConsumer vertexConsumer = outlineBufferSource.getBuffer(RenderType.translucent());
 

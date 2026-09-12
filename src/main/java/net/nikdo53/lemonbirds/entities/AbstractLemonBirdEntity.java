@@ -173,6 +173,10 @@ public abstract class AbstractLemonBirdEntity extends ThrowableItemProjectile {
         double speed = 10.0 * movement.lengthSqr();
         double size = 0.1 * speed * (1 / birdItem.getFlyingSpeed() / 2);
 
+        if (birdItem == ModItems.BOMB_LEMON.get() || birdItem == ModItems.BIG_LEMON.get()){
+            size++;
+        }
+
         if (level.getBlockState(pos).getBlock() instanceof BadPigBlock pigBlock && level instanceof ServerLevel serverLevel){
             if (getDestroyEffectivity().canDestroy){
                 pigBlock.sable$getCallback().onHitWithVelocity(serverLevel, pos, level.getBlockState(pos), getDeltaMovement().lengthSqr() * 5);
